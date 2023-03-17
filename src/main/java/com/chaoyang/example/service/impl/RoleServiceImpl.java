@@ -59,6 +59,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
+    public Role findById(Long id) {
+        return this.getById(id);
+    }
+
+    @Override
     public List<Role> findAll() {
         return this.list();
     }

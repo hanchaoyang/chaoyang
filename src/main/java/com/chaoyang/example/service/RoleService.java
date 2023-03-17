@@ -37,6 +37,11 @@ public interface RoleService extends IService<Role> {
     boolean notExistsByNameOrCode(String name, String code);
 
     /**
+     * 根据主键查询角色
+     */
+    Role findById(Long id);
+
+    /**
      * 查询全部角色
      */
     List<Role> findAll();

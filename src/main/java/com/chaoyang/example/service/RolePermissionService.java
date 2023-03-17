@@ -1,6 +1,7 @@
 package com.chaoyang.example.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
 import com.chaoyang.example.entity.po.RolePermission;
 
 /**
@@ -10,6 +11,11 @@ import com.chaoyang.example.entity.po.RolePermission;
  * @since 2023/3/17
  */
 public interface RolePermissionService extends IService<RolePermission> {
+
+    /**
+     * 添加角色权限
+     */
+    void create(CreateRolePermissionRequest createRolePermissionRequest);
 
     /**
      * 根据角色主键删除角色权限

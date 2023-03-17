@@ -59,6 +59,11 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
+    public Permission findById(Long id) {
+        return this.getById(id);
+    }
+
+    @Override
     public List<Permission> findAll() {
         return this.list();
     }

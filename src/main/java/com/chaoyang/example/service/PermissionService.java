@@ -37,6 +37,11 @@ public interface PermissionService extends IService<Permission> {
     boolean notExistsByNameOrCode(String name, String code);
 
     /**
+     * 根据主键查询权限
+     */
+    Permission findById(Long id);
+
+    /**
      * 查询全部权限
      */
     List<Permission> findAll();
