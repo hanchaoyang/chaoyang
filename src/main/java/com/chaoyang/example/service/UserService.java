@@ -1,6 +1,7 @@
 package com.chaoyang.example.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.chaoyang.example.entity.dto.request.CreateUserRequest;
 import com.chaoyang.example.entity.po.User;
 
 /**
@@ -10,5 +11,9 @@ import com.chaoyang.example.entity.po.User;
  * @since 2023/3/17
  */
 public interface UserService extends IService<User> {
+
+    boolean existsByPhone(String phone);
+
+    void create(CreateUserRequest createUserRequest);
 
 }
