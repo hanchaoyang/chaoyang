@@ -3,6 +3,7 @@ package com.chaoyang.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
+import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
 import com.chaoyang.example.entity.po.RolePermission;
 import com.chaoyang.example.mapper.RolePermissionMapper;
 import com.chaoyang.example.service.PermissionService;
@@ -33,6 +34,20 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     }
 
     @Override
+    public boolean existsById(Long id) {
+        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(RolePermission::getId, id);
+
+        return this.count(queryWrapper) != 0;
+    }
+
+    @Override
+    public boolean notExistsById(Long id) {
+        return !this.existsById(id);
+    }
+
+    @Override
     public void create(CreateRolePermissionRequest createRolePermissionRequest) {
         if (this.roleService.notExistsById(createRolePermissionRequest.getRoleId())) {
             throw new BusinessException("角色不存在");
@@ -49,6 +64,23 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
 
         if (!this.save(rolePermission)) {
             throw new BusinessException("添加角色权限失败");
+        }
+    }
+
+    @Override
+    public void remove(RemoveRolePermissionRequest removeRolePermissionRequest) {
+        /*
+         * 判断是否存在
+         */
+        if (this.notExistsById(removeRolePermissionRequest.getRolePermissionId())) {
+            throw new BusinessException("该角色权限不存在");
+        }
+
+        /*
+         * 删除
+         */
+        if (!this.removeById(removeRolePermissionRequest.getRolePermissionId())) {
+            throw new BusinessException("删除角色权限失败");
         }
     }
 
