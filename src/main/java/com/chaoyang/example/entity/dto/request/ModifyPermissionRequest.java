@@ -19,7 +19,7 @@ public class ModifyPermissionRequest {
      * 权限主键
      */
     @NotNull(message = "权限主键不能为空")
-    private Long id;
+    private Long permissionId;
 
     /**
      * 权限名称

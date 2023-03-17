@@ -22,28 +22,38 @@ public interface PermissionService extends IService<Permission> {
     boolean existsById(Long id);
 
     /**
+     * 根据主键查询权限是否存在
+     */
+    boolean notExistsById(Long id);
+
+    /**
      * 根据名称或标识查询权限是否存在
      */
     boolean existsByNameOrCode(String name, String code);
 
     /**
+     * 根据名称或标识查询权限是否存在
+     */
+    boolean notExistsByNameOrCode(String name, String code);
+
+    /**
      * 查询全部权限
      */
-    List<Permission> findAllPermission();
+    List<Permission> findAll();
 
     /**
      * 添加权限
      */
-    void createPermission(CreatePermissionRequest createPermissionRequest);
+    void create(CreatePermissionRequest createPermissionRequest);
 
     /**
      * 修改权限
      */
-    void modifyPermission(ModifyPermissionRequest modifyPermissionRequest);
+    void modify(ModifyPermissionRequest modifyPermissionRequest);
 
     /**
      * 删除权限
      */
-    void removePermission(RemovePermissionRequest removePermissionRequest);
+    void remove(RemovePermissionRequest removePermissionRequest);
 
 }
