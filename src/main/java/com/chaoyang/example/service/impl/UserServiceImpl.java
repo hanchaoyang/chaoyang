@@ -46,15 +46,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void create(CreateUserRequest createUserRequest) {
-        if (this.existsByPhone(createUserRequest.getPhone())) {
+        if (this.existsByPhone(createUserRequest.getUserPhone())) {
             throw new BusinessException("该用户已存在");
         }
 
         User user = new User();
 
-        user.setNickname(createUserRequest.getNickname());
-        user.setPhone(createUserRequest.getPhone());
-        user.setPassword(DigestUtil.md5Hex(DigestUtil.md5Hex(createUserRequest.getPassword())));
+        user.setNickname(createUserRequest.getUserNickname());
+        user.setPhone(createUserRequest.getUserPhone());
+        user.setPassword(DigestUtil.md5Hex(DigestUtil.md5Hex(createUserRequest.getUserPassword())));
         user.setStatus(UserStatusConstant.ENABLE);
 
         if (!this.save(user)) {
