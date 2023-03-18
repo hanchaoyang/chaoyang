@@ -16,6 +16,7 @@ import com.chaoyang.example.service.UserService;
 import com.hanchaoyang.status.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -111,6 +112,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void remove(RemoveUserRequest removeUserRequest) {
         if (this.notExistsById(removeUserRequest.getUserId())) {
             throw new BusinessException("该用户不存在");
