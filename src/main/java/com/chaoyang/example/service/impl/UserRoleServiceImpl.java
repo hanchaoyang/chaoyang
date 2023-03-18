@@ -1,0 +1,41 @@
+package com.chaoyang.example.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.chaoyang.example.entity.po.UserRole;
+import com.chaoyang.example.mapper.UserRoleMapper;
+import com.chaoyang.example.service.UserRoleService;
+import com.hanchaoyang.status.BusinessException;
+import org.springframework.stereotype.Service;
+
+/**
+ * 用户角色服务层实现类
+ *
+ * @author 韩朝阳
+ * @since 2023/3/19
+ */
+@Service
+public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> implements UserRoleService {
+
+    @Override
+    public void removeByUserId(Long userId) {
+        LambdaQueryWrapper<UserRole> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(UserRole::getUserId, userId);
+
+        if (!this.remove(queryWrapper)) {
+            throw new BusinessException("删除用户角色失败");
+        }
+    }
+
+    @Override
+    public void removeByRoleId(Long roleId) {
+        LambdaQueryWrapper<UserRole> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(UserRole::getRoleId, roleId);
+
+        if (!this.remove(queryWrapper)) {
+            throw new BusinessException("删除用户角色失败");
+        }
+    }
+}

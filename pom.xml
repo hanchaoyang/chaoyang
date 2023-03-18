@@ -84,6 +84,8 @@
             <artifactId>result</artifactId>
             <version>1.0</version>
         </dependency>
+        <!-- OkHttp -->
+        <!-- Fastjson -->
     </dependencies>
 
     <build>

@@ -3,6 +3,7 @@ package com.chaoyang.example.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chaoyang.example.entity.dto.request.CreateUserRequest;
 import com.chaoyang.example.entity.dto.request.ModifyUserRequest;
+import com.chaoyang.example.entity.dto.request.RemoveUserRequest;
 import com.chaoyang.example.entity.po.User;
 
 /**
@@ -22,5 +23,7 @@ public interface UserService extends IService<User> {
     void create(CreateUserRequest createUserRequest);
 
     void modify(ModifyUserRequest modifyUserRequest);
+
+    void remove(RemoveUserRequest removeUserRequest);
 
 }

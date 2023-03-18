@@ -6,10 +6,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.constant.UserStatusConstant;
 import com.chaoyang.example.entity.dto.request.CreateUserRequest;
 import com.chaoyang.example.entity.dto.request.ModifyUserRequest;
+import com.chaoyang.example.entity.dto.request.RemoveUserRequest;
 import com.chaoyang.example.entity.po.User;
 import com.chaoyang.example.mapper.UserMapper;
+import com.chaoyang.example.service.UserRoleService;
 import com.chaoyang.example.service.UserService;
 import com.hanchaoyang.status.BusinessException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,7 +22,10 @@ import org.springframework.stereotype.Service;
  * @since 2023/3/17
  */
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    private final UserRoleService userRoleService;
 
     @Override
     public boolean existsById(Long id) {
@@ -78,6 +84,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!this.updateById(user)) {
             throw new BusinessException("修改用户失败");
         }
+    }
+
+    @Override
+    public void remove(RemoveUserRequest removeUserRequest) {
+        if (this.notExistsById(removeUserRequest.getUserId())) {
+            throw new BusinessException("该用户不存在");
+        }
+
+        if (!this.removeById(removeUserRequest.getUserId())) {
+            throw new BusinessException("删除用户失败");
+        }
+
+        this.userRoleService.removeByUserId(removeUserRequest.getUserId());
     }
 
 }
