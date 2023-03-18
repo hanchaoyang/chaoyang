@@ -2,10 +2,12 @@ package com.chaoyang.example.service.impl;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.constant.UserStatusConstant;
 import com.chaoyang.example.entity.dto.request.CreateUserRequest;
 import com.chaoyang.example.entity.dto.request.ModifyUserRequest;
+import com.chaoyang.example.entity.dto.request.ModifyUserStatusRequest;
 import com.chaoyang.example.entity.dto.request.RemoveUserRequest;
 import com.chaoyang.example.entity.po.User;
 import com.chaoyang.example.mapper.UserMapper;
@@ -14,6 +16,8 @@ import com.chaoyang.example.service.UserService;
 import com.hanchaoyang.status.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 /**
  * 用户服务层实现类
@@ -83,6 +87,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         if (!this.updateById(user)) {
             throw new BusinessException("修改用户失败");
+        }
+    }
+
+    @Override
+    public void modifyStatus(ModifyUserStatusRequest modifyUserStatusRequest) {
+        if (!Objects.equals(modifyUserStatusRequest.getUserStatus(), UserStatusConstant.DISABLE) && !Objects.equals(modifyUserStatusRequest.getUserStatus(), UserStatusConstant.ENABLE)) {
+            throw new BusinessException("用户状态参数错误");
+        }
+
+        if (this.notExistsById(modifyUserStatusRequest.getUserId())) {
+            throw new BusinessException("该用户不存在");
+        }
+
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+
+        updateWrapper.set(User::getId, modifyUserStatusRequest.getUserId());
+        updateWrapper.set(User::getStatus, modifyUserStatusRequest.getUserStatus());
+
+        if (!this.update(updateWrapper)) {
+            throw new BusinessException("修改用户状态失败");
         }
     }
 
