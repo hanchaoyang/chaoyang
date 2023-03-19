@@ -28,4 +28,8 @@ public class AuthException extends RuntimeException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
+    public int getCode() {
+        return 401;
+    }
+
 }
