@@ -55,7 +55,13 @@ public class LoginServiceImpl implements LoginService {
             throw new BusinessException("验证码错误");
         }
 
-        return UUID.randomUUID().toString();
+        // 验证手机号和密码
+
+        String token = UUID.randomUUID().toString();
+
+        // 保存登录信息
+
+        return token;
     }
 
 }
