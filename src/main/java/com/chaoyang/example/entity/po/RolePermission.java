@@ -6,12 +6,18 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+//import javax.persistence.Entity;
+//import javax.persistence.GeneratedValue;
+//import javax.persistence.GenerationType;
+//import javax.persistence.Id;
+
 /**
  * 角色权限实体类
  *
  * @author 韩朝阳
  * @since 2023/3/16
  */
+//@Entity(name = "role_permission")
 @TableName("role_permission")
 @Data
 public class RolePermission {
@@ -19,6 +25,8 @@ public class RolePermission {
     /**
      * 主键
      */
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
@@ -31,7 +39,7 @@ public class RolePermission {
     /**
      * 权限主键
      */
-    @TableField("user_id")
+    @TableField("permission_id")
     private Long permissionId;
 
 }

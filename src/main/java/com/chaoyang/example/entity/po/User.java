@@ -7,12 +7,18 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoyang.example.constant.UserStatusConstant;
 import lombok.Data;
 
+//import javax.persistence.Entity;
+//import javax.persistence.GeneratedValue;
+//import javax.persistence.GenerationType;
+//import javax.persistence.Id;
+
 /**
  * 用户实体类
  *
  * @author 韩朝阳
  * @since 2023/3/16
  */
+//@Entity(name = "user")
 @TableName("user")
 @Data
 public class User {
@@ -20,6 +26,8 @@ public class User {
     /**
      * 主键
      */
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
