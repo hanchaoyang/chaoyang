@@ -2,15 +2,14 @@ package com.chaoyang.example.controller;
 
 import com.chaoyang.example.entity.dto.request.GetQrCodeRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
+import com.chaoyang.example.exception.ParameterException;
 import com.chaoyang.example.service.LoginService;
 import com.hanchaoyang.result.Result;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 
 /**
  * 登录控制层
@@ -36,6 +35,13 @@ public class LoginController {
         String token = this.loginService.login(loginRequest);
 
         return Result.success(token);
+    }
+
+    @PostMapping("/logout")
+    public Result<Void> logout(@RequestHeader("Authorization") String token) {
+        this.loginService.logout(token);
+
+        return Result.success();
     }
 
 }

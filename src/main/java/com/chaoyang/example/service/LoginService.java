@@ -23,4 +23,9 @@ public interface LoginService {
      */
     String login(LoginRequest loginRequest);
 
+    /**
+     * 退出
+     */
+    void logout(String token);
+
 }
