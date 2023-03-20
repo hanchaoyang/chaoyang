@@ -3,9 +3,9 @@ package com.chaoyang.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.po.UserRole;
+import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.UserRoleMapper;
 import com.chaoyang.example.service.UserRoleService;
-import com.hanchaoyang.status.BusinessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

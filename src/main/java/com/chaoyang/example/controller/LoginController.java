@@ -1,15 +1,13 @@
 package com.chaoyang.example.controller;
 
+import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.GetQrCodeRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
-import com.chaoyang.example.exception.ParameterException;
 import com.chaoyang.example.service.LoginService;
-import com.hanchaoyang.result.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Objects;
 
 /**
  * 登录控制层

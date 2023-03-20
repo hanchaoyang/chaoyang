@@ -1,7 +1,6 @@
 package com.chaoyang.example.exception;
 
-import com.hanchaoyang.result.Result;
-import com.hanchaoyang.status.BusinessException;
+import com.chaoyang.example.entity.dto.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,7 +20,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BusinessException.class)
     public Result<Void> handleBusinessException(BusinessException e) {
-        return Result.of(e);
+        return Result.of(e.getCode(), e.getMessage());
     }
 
     /**
@@ -41,7 +40,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 运行时异常
+     * 其他异常
      */
     @ExceptionHandler(RuntimeException.class)
     public Result<Void> handleRuntimeException(RuntimeException e) {

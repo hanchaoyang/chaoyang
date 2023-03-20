@@ -1,8 +1,8 @@
 package com.chaoyang.example.controller;
 
+import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.CreateUserRequest;
 import com.chaoyang.example.service.UserService;
-import com.hanchaoyang.result.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

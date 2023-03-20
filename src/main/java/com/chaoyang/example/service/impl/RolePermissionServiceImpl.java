@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
 import com.chaoyang.example.entity.po.RolePermission;
+import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.RolePermissionMapper;
 import com.chaoyang.example.service.PermissionService;
 import com.chaoyang.example.service.RolePermissionService;
 import com.chaoyang.example.service.RoleService;
-import com.hanchaoyang.status.BusinessException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 

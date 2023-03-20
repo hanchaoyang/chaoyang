@@ -6,16 +6,15 @@ import com.chaoyang.example.entity.dto.request.CreateRoleRequest;
 import com.chaoyang.example.entity.dto.request.ModifyRoleRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRoleRequest;
 import com.chaoyang.example.entity.po.Role;
+import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.RoleMapper;
 import com.chaoyang.example.service.RolePermissionService;
 import com.chaoyang.example.service.RoleService;
-import com.hanchaoyang.status.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * 角色服务层实现类
