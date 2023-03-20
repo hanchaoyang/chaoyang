@@ -13,6 +13,8 @@ import com.hanchaoyang.status.BusinessException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 角色权限服务层实现类
  *
@@ -45,6 +47,15 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     @Override
     public boolean notExistsById(Long id) {
         return !this.existsById(id);
+    }
+
+    @Override
+    public List<RolePermission> findByRoleIds(List<Long> roleIds) {
+        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.in(RolePermission::getRoleId, roleIds);
+
+        return this.list(queryWrapper);
     }
 
     @Override

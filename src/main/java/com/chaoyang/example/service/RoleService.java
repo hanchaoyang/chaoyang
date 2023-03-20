@@ -7,6 +7,7 @@ import com.chaoyang.example.entity.dto.request.RemoveRoleRequest;
 import com.chaoyang.example.entity.po.Role;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 角色服务层接口
@@ -40,6 +41,11 @@ public interface RoleService extends IService<Role> {
      * 根据主键查询角色
      */
     Role findById(Long id);
+
+    /**
+     * 根据主键集合查询角色
+     */
+    List<Role> findByIds(List<Long> ids);
 
     /**
      * 查询全部角色

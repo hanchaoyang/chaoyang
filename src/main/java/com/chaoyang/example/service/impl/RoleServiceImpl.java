@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 角色服务层实现类
@@ -61,6 +62,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Override
     public Role findById(Long id) {
         return this.getById(id);
+    }
+
+    @Override
+    public List<Role> findByIds(List<Long> ids) {
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.in(Role::getId, ids);
+
+        return this.list(queryWrapper);
     }
 
     @Override

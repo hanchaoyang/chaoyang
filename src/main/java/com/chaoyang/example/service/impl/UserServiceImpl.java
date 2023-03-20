@@ -56,6 +56,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public User findByPhoneAndPassword(String phone, String password) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(User::getPhone, phone);
+        queryWrapper.eq(User::getPassword, password);
+
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
     public void create(CreateUserRequest createUserRequest) {
         if (this.existsByPhone(createUserRequest.getUserPhone())) {
             throw new BusinessException("该用户已存在");

@@ -42,6 +42,11 @@ public interface PermissionService extends IService<Permission> {
     Permission findById(Long id);
 
     /**
+     * 根据主键集合查询权限
+     */
+   List<Permission> findByIds(List<Long> ids);
+
+    /**
      * 查询全部权限
      */
     List<Permission> findAll();

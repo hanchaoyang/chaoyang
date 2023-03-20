@@ -5,6 +5,8 @@ import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
 import com.chaoyang.example.entity.po.RolePermission;
 
+import java.util.List;
+
 /**
  * 角色权限服务层接口
  *
@@ -22,6 +24,11 @@ public interface RolePermissionService extends IService<RolePermission> {
      * 根据主键查询角色权限是否存在
      */
     boolean notExistsById(Long id);
+
+    /**
+     * 根据角色主键集合查询角色权限
+     */
+    List<RolePermission> findByRoleIds(List<Long> roleIds);
 
     /**
      * 添加角色权限

@@ -64,6 +64,15 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
+    public List<Permission> findByIds(List<Long> ids) {
+        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.in(Permission::getId, ids);
+
+        return this.list(queryWrapper);
+    }
+
+    @Override
     public List<Permission> findAll() {
         return this.list();
     }

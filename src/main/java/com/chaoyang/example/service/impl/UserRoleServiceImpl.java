@@ -8,6 +8,9 @@ import com.chaoyang.example.service.UserRoleService;
 import com.hanchaoyang.status.BusinessException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * 用户角色服务层实现类
  *
@@ -16,6 +19,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> implements UserRoleService {
+
+    @Override
+    public List<UserRole> findByUserId(Long userId) {
+        LambdaQueryWrapper<UserRole> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(UserRole::getUserId, userId);
+
+        return this.list(queryWrapper);
+    }
 
     @Override
     public void removeByUserId(Long userId) {

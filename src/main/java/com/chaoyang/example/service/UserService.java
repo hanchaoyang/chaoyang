@@ -21,6 +21,8 @@ public interface UserService extends IService<User> {
 
     boolean existsByPhone(String phone);
 
+    User findByPhoneAndPassword(String phone, String password);
+
     void create(CreateUserRequest createUserRequest);
 
     void modify(ModifyUserRequest modifyUserRequest);
