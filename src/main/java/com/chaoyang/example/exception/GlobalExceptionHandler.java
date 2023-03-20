@@ -35,6 +35,10 @@ public class GlobalExceptionHandler {
     /**
      * 参数错误
      */
+    @ExceptionHandler(ParameterException.class)
+    public Result<Void> handleParameterException(ParameterException e) {
+        return Result.of(e.getCode(), e.getMessage());
+    }
 
     /**
      * 运行时异常
