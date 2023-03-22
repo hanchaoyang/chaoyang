@@ -31,15 +31,15 @@ public class LoginRequest {
     /**
      * 临时字符串
      */
-    @NotBlank(message = "临时字符串不能为空")
-    @Length(min = 4, max = 32)
+//    @NotBlank(message = "临时字符串不能为空")
+//    @Length(min = 4, max = 32)
     private String nonce;
 
     /**
      * 验证码
      */
-    @NotBlank(message = "验证码不能为空")
-    @Length(min = 1, max = 3)
+//    @NotBlank(message = "验证码不能为空")
+//    @Length(min = 1, max = 3)
     private String qrcode;
 
 }

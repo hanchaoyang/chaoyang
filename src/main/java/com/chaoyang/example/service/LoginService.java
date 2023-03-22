@@ -2,6 +2,7 @@ package com.chaoyang.example.service;
 
 import com.chaoyang.example.entity.dto.request.GetQrCodeRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
+import com.chaoyang.example.entity.dto.response.LoginResponse;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,7 +22,7 @@ public interface LoginService {
     /**
      * 登录
      */
-    String login(LoginRequest loginRequest);
+    LoginResponse login(LoginRequest loginRequest);
 
     /**
      * 退出

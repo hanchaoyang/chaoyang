@@ -6,6 +6,7 @@ import com.chaoyang.example.constant.UserStatusConstant;
 import com.chaoyang.example.entity.dto.LoginInfo;
 import com.chaoyang.example.entity.dto.request.GetQrCodeRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
+import com.chaoyang.example.entity.dto.response.LoginResponse;
 import com.chaoyang.example.entity.po.*;
 import com.chaoyang.example.exception.AuthException;
 import com.chaoyang.example.exception.BusinessException;
@@ -69,16 +70,16 @@ public class LoginServiceImpl implements LoginService {
      * TODO 重复登录问题
      */
     @Override
-    public String login(LoginRequest loginRequest) {
-        String key = String.format("chaoyang:qrcode:%s", loginRequest.getNonce());
-
-        String qrcode = this.redisTemplate.opsForValue().get(key);
-
-        if (Objects.equals(loginRequest.getQrcode(), qrcode)) {
-            this.redisTemplate.delete(key);
-        } else {
-            throw new BusinessException("验证码错误");
-        }
+    public LoginResponse login(LoginRequest loginRequest) {
+//        String key = String.format("chaoyang:qrcode:%s", loginRequest.getNonce());
+//
+//        String qrcode = this.redisTemplate.opsForValue().get(key);
+//
+//        if (Objects.equals(loginRequest.getQrcode(), qrcode)) {
+//            this.redisTemplate.delete(key);
+//        } else {
+//            throw new BusinessException("验证码错误");
+//        }
 
         User user = this.userService.findByPhoneAndPassword(loginRequest.getUserPhone(), DigestUtil.md5Hex(DigestUtil.md5Hex(loginRequest.getUserPassword())));
 
@@ -120,7 +121,11 @@ public class LoginServiceImpl implements LoginService {
 
         this.redisTemplate.opsForValue().set(String.format("chaoyang:login-info:%s", token), JSONObject.toJSONString(loginInfo), Duration.ofDays(7L));
 
-        return token;
+        LoginResponse loginResponse = new LoginResponse();
+
+        loginResponse.setToken(token);
+
+        return loginResponse;
     }
 
     @Override

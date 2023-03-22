@@ -3,6 +3,7 @@ package com.chaoyang.example.controller;
 import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.GetQrCodeRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
+import com.chaoyang.example.entity.dto.response.LoginResponse;
 import com.chaoyang.example.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +30,10 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public Result<String> login(@RequestBody LoginRequest loginRequest) {
-        String token = this.loginService.login(loginRequest);
+    public Result<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse loginResponse = this.loginService.login(loginRequest);
 
-        return Result.success(token);
+        return Result.success(loginResponse);
     }
 
     @PostMapping("/logout")
