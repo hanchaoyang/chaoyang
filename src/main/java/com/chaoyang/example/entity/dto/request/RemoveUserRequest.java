@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 /**
- * 删除用户请求参数类
+ * 删除用户请求类
  *
  * @author 韩朝阳
  * @since 2023/3/19
