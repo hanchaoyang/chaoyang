@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotBlank;
 
 /**
- * 获取验证码请求参数
+ * 获取验证码请求类
  *
  * @author 韩朝阳
  * @since 2023/3/19
@@ -18,7 +18,7 @@ public class GetQrCodeRequest {
      * 临时字符串
      */
     @NotBlank(message = "临时字符串不能为空")
-    @Length(min = 4, max = 32)
+    @Length(min = 4, max = 32, message = "临时字符串长度为4-32个字符")
     private String nonce;
 
 }
