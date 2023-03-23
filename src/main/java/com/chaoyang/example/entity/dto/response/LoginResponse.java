@@ -3,7 +3,7 @@ package com.chaoyang.example.entity.dto.response;
 import lombok.Data;
 
 /**
- * 登录响应数据
+ * 登录响应类
  *
  * @author 韩朝阳
  * @since 2023/3/21

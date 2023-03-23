@@ -3,6 +3,7 @@ package com.chaoyang.example.controller;
 import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.GetQrCodeRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
+import com.chaoyang.example.entity.dto.response.LoginInfoResponse;
 import com.chaoyang.example.entity.dto.response.LoginResponse;
 import com.chaoyang.example.service.LoginService;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,13 @@ public class LoginController {
         this.loginService.logout(token);
 
         return Result.success();
+    }
+
+    @GetMapping("/login-info")
+    public Result<LoginInfoResponse> getLoginInfo(@RequestHeader("Authorization") String token) {
+        LoginInfoResponse loginInfoResponse = this.loginService.getLoginInfo(token);
+
+        return Result.success(loginInfoResponse);
     }
 
 }

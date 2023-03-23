@@ -6,6 +6,7 @@ import com.chaoyang.example.constant.UserStatusConstant;
 import com.chaoyang.example.entity.dto.LoginInfo;
 import com.chaoyang.example.entity.dto.request.GetQrCodeRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
+import com.chaoyang.example.entity.dto.response.LoginInfoResponse;
 import com.chaoyang.example.entity.dto.response.LoginResponse;
 import com.chaoyang.example.entity.po.*;
 import com.chaoyang.example.exception.AuthException;
@@ -135,6 +136,27 @@ public class LoginServiceImpl implements LoginService {
         }
 
         this.redisTemplate.delete(String.format("chaoyang:login-info:%s", token));
+    }
+
+    @Override
+    public LoginInfoResponse getLoginInfo(String token) {
+        String loginInfoStr = this.redisTemplate.opsForValue().get(String.format("chaoyang:login-info:%s", token));
+
+        if (Objects.isNull(loginInfoStr)) {
+            throw new AuthException("未登录");
+        }
+
+        LoginInfo loginInfo = JSONObject.parseObject(loginInfoStr, LoginInfo.class);
+
+        LoginInfoResponse loginInfoResponse = new LoginInfoResponse();
+
+        loginInfoResponse.setUserId(loginInfo.getUserId());
+        loginInfoResponse.setUserNickname(loginInfo.getUserNickname());
+        loginInfoResponse.setUserPhone(loginInfo.getUserPhone());
+        loginInfoResponse.setUserRoles(loginInfo.getUserRoles());
+        loginInfoResponse.setUserPermissions(loginInfo.getUserPermissions());
+
+        return loginInfoResponse;
     }
 
 }
