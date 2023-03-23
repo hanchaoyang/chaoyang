@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 /**
- * 添加角色权限请求参数类
+ * 添加角色权限请求类
  *
  * @author 韩朝阳
  * @since 2023/3/17

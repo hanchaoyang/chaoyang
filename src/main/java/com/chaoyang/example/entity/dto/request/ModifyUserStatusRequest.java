@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 /**
- * 修改用户状态请求参数类
+ * 修改用户状态请求类
  *
  * @author 韩朝阳
  * @since 2023/3/19
