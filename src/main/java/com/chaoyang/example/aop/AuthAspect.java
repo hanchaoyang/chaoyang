@@ -83,7 +83,7 @@ public class AuthAspect {
     }
 
     private LoginInfo getLoginInfo(String token) {
-        String loginInfoStr = this.redisTemplate.opsForValue().get(String.format("chaoyang:token:%s", token));
+        String loginInfoStr = this.redisTemplate.opsForValue().get(String.format("chaoyang:login-info:%s", token));
 
         if (Objects.isNull(loginInfoStr)) {
             throw new AuthException("无权限");
