@@ -1,20 +1,26 @@
 package com.chaoyang.example.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.CreatePermissionRequest;
+import com.chaoyang.example.entity.dto.request.FindInactivePermissionPageRequest;
 import com.chaoyang.example.entity.dto.request.ModifyPermissionRequest;
 import com.chaoyang.example.entity.dto.request.RemovePermissionRequest;
+import com.chaoyang.example.entity.dto.response.InactivePermissionResponse;
 import com.chaoyang.example.entity.po.Permission;
+import com.chaoyang.example.entity.po.RolePermission;
 import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.PermissionMapper;
 import com.chaoyang.example.service.PermissionService;
 import com.chaoyang.example.service.RolePermissionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 权限服务层实现类
@@ -75,6 +81,37 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public List<Permission> findAll() {
         return this.list();
+    }
+
+    @Override
+    public Page<InactivePermissionResponse> findInactivePermissionPage(FindInactivePermissionPageRequest findInactivePermissionPageRequest) {
+        List<RolePermission> rolePermissions = this.rolePermissionService.findByRoleId(findInactivePermissionPageRequest.getRoleId());
+
+        List<Long> excludedIds = rolePermissions.stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
+
+        Page<Permission> permissionPage = new Page<>(findInactivePermissionPageRequest.getCurrent(), findInactivePermissionPageRequest.getSize());
+
+        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.notIn(!excludedIds.isEmpty(), Permission::getId, excludedIds);
+
+        this.page(permissionPage, queryWrapper);
+
+        Page<InactivePermissionResponse> inactivePermissionResponsePage = new Page<>();
+
+        BeanUtils.copyProperties(permissionPage, inactivePermissionResponsePage, "records");
+
+        inactivePermissionResponsePage.setRecords(permissionPage.getRecords().stream().map(permission -> {
+            InactivePermissionResponse inactivePermissionResponse = new InactivePermissionResponse();
+
+            inactivePermissionResponse.setPermissionId(permission.getId());
+            inactivePermissionResponse.setPermissionName(permission.getName());
+            inactivePermissionResponse.setPermissionCode(permission.getCode());
+
+            return inactivePermissionResponse;
+        }).collect(Collectors.toList()));
+
+        return inactivePermissionResponsePage;
     }
 
     @Override
