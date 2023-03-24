@@ -177,9 +177,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
 
         queryWrapper.eq(RolePermission::getRoleId, roleId);
 
-        if (!this.remove(queryWrapper)) {
-            throw new BusinessException("删除角色权限失败");
-        }
+        this.remove(queryWrapper);
     }
 
     @Override
@@ -188,9 +186,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
 
         queryWrapper.eq(RolePermission::getPermissionId, permissionId);
 
-        if (!this.remove(queryWrapper)) {
-            throw new BusinessException("删除角色权限失败");
-        }
+        this.remove(queryWrapper);
     }
 
 }
