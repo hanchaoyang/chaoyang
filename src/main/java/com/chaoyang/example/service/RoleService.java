@@ -1,13 +1,15 @@
 package com.chaoyang.example.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chaoyang.example.entity.dto.request.CreateRoleRequest;
+import com.chaoyang.example.entity.dto.request.FindRolePageRequest;
 import com.chaoyang.example.entity.dto.request.ModifyRoleRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRoleRequest;
+import com.chaoyang.example.entity.dto.response.FindRolePageResponse;
 import com.chaoyang.example.entity.po.Role;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * 角色服务层接口
@@ -51,6 +53,11 @@ public interface RoleService extends IService<Role> {
      * 查询全部角色
      */
     List<Role> findAll();
+
+    /**
+     * 根据条件分页查询角色
+     */
+    Page<FindRolePageResponse> findRolePage(FindRolePageRequest findRolePageRequest);
 
     /**
      * 添加角色

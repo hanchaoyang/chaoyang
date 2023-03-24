@@ -1,20 +1,26 @@
 package com.chaoyang.example.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.CreateRoleRequest;
+import com.chaoyang.example.entity.dto.request.FindRolePageRequest;
 import com.chaoyang.example.entity.dto.request.ModifyRoleRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRoleRequest;
+import com.chaoyang.example.entity.dto.response.FindRolePageResponse;
 import com.chaoyang.example.entity.po.Role;
 import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.RoleMapper;
 import com.chaoyang.example.service.RolePermissionService;
 import com.chaoyang.example.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 角色服务层实现类
@@ -75,6 +81,34 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Override
     public List<Role> findAll() {
         return this.list();
+    }
+
+    @Override
+    public Page<FindRolePageResponse> findRolePage(FindRolePageRequest findRolePageRequest) {
+        Page<Role> rolePage = new Page<>(findRolePageRequest.getCurrent(), findRolePageRequest.getSize());
+
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.like(Objects.nonNull(findRolePageRequest.getRoleName()), Role::getName, findRolePageRequest.getRoleName());
+        queryWrapper.like(Objects.nonNull(findRolePageRequest.getRoleCode()), Role::getCode, findRolePageRequest.getRoleCode());
+
+        this.page(rolePage, queryWrapper);
+
+        Page<FindRolePageResponse> roleResponsePage = new Page<>();
+
+        BeanUtils.copyProperties(rolePage, roleResponsePage, "records");
+
+        roleResponsePage.setRecords(rolePage.getRecords().stream().map(role -> {
+            FindRolePageResponse findRolePageResponse = new FindRolePageResponse();
+
+            findRolePageResponse.setRoleId(role.getId());
+            findRolePageResponse.setRoleName(role.getName());
+            findRolePageResponse.setRoleCode(role.getCode());
+
+            return findRolePageResponse;
+        }).collect(Collectors.toList()));
+
+        return roleResponsePage;
     }
 
     @Override
