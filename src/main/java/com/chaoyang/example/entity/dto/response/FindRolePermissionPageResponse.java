@@ -11,10 +11,10 @@ import lombok.Data;
 @Data
 public class FindRolePermissionPageResponse {
 
-//    /**
-//     * 角色权限主键
-//     */
-//    private Long rolePermissionId;
+    /**
+     * 角色权限主键
+     */
+    private Long rolePermissionId;
 //
 //    /**
 //     * 角色主键

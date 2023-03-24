@@ -7,6 +7,7 @@ import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
 import com.chaoyang.example.entity.dto.request.FindRolePermissionPageRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
 import com.chaoyang.example.entity.dto.response.FindRolePermissionPageResponse;
+import com.chaoyang.example.entity.po.Permission;
 import com.chaoyang.example.entity.po.RolePermission;
 import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.RolePermissionMapper;
@@ -17,7 +18,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -96,15 +100,29 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
 
         BeanUtils.copyProperties(rolePermissionPage, rolePermissionResponsePage, "records");
 
+        List<Long> permissionIds = rolePermissionPage.getRecords().stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
+
+        Map<Long, Permission> permissionMap;
+
+        if (permissionIds.isEmpty()) {
+            permissionMap = new HashMap<>();
+        } else {
+            List<Permission> permissions = this.permissionService.findByIds(permissionIds);
+
+            permissionMap = permissions.stream().collect(Collectors.toMap(Permission::getId, Function.identity()));
+        }
+
         rolePermissionResponsePage.setRecords(rolePermissionPage.getRecords().stream().map(rolePermission -> {
+            Long permissionId = rolePermission.getPermissionId();
+
+            Permission permission = permissionMap.get(permissionId);
+
             FindRolePermissionPageResponse findRolePermissionPageResponse = new FindRolePermissionPageResponse();
 
-//            findRolePermissionPageResponse.setRolePermissionId(rolePermission.getId());
-//            findRolePermissionPageResponse.setRoleId(rolePermission.getRoleId());
+            findRolePermissionPageResponse.setRolePermissionId(rolePermission.getId());
             findRolePermissionPageResponse.setPermissionId(rolePermission.getPermissionId());
-            // 其他字段
-            findRolePermissionPageResponse.setPermissionName("啥啥啥");
-            findRolePermissionPageResponse.setPermissionCode("哈哈哈");
+            findRolePermissionPageResponse.setPermissionName(permission.getName());
+            findRolePermissionPageResponse.setPermissionCode(permission.getCode());
 
             return findRolePermissionPageResponse;
         }).collect(Collectors.toList()));
