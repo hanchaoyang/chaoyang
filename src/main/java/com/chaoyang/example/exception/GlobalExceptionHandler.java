@@ -2,6 +2,7 @@ package com.chaoyang.example.exception;
 
 import com.chaoyang.example.entity.dto.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -37,6 +38,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ParameterException.class)
     public Result<Void> handleParameterException(ParameterException e) {
         return Result.of(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Result<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return Result.of(400, "参数错误");
     }
 
     /**
