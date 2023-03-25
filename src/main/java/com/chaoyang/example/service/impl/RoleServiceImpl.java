@@ -3,11 +3,9 @@ package com.chaoyang.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.chaoyang.example.entity.dto.request.CreateRoleRequest;
-import com.chaoyang.example.entity.dto.request.FindRolePageRequest;
-import com.chaoyang.example.entity.dto.request.ModifyRoleRequest;
-import com.chaoyang.example.entity.dto.request.RemoveRoleRequest;
+import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.FindRolePageResponse;
+import com.chaoyang.example.entity.dto.response.FindRoleResponse;
 import com.chaoyang.example.entity.po.Role;
 import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.RoleMapper;
@@ -84,6 +82,23 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
+    public FindRoleResponse findRoleResponse(FindRoleRequest findRoleRequest) {
+        Role role = this.getById(findRoleRequest.getRoleId());
+
+        if (Objects.isNull(role)) {
+            throw new BusinessException("该角色不存在");
+        }
+
+        FindRoleResponse findRoleResponse = new FindRoleResponse();
+
+        findRoleResponse.setRoleId(role.getId());
+        findRoleResponse.setRoleName(role.getName());
+        findRoleResponse.setRoleCode(role.getCode());
+
+        return findRoleResponse;
+    }
+
+    @Override
     public Page<FindRolePageResponse> findRolePage(FindRolePageRequest findRolePageRequest) {
         Page<Role> rolePage = new Page<>(findRolePageRequest.getCurrent(), findRolePageRequest.getSize());
 
@@ -116,7 +131,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         /*
          * 判断角色名称或标识是否已存在
          */
-        if (this.notExistsByNameOrCode(createRoleRequest.getRoleName(), createRoleRequest.getRoleCode())) {
+        if (this.existsByNameOrCode(createRoleRequest.getRoleName(), createRoleRequest.getRoleCode())) {
             throw new BusinessException("该角色名称或标识已存在");
         }
 
@@ -145,7 +160,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         /*
          * 判断权限名称或标识是否已存在
          */
-        if (this.notExistsByNameOrCode(modifyRoleRequest.getRoleName(), modifyRoleRequest.getRoleCode())) {
+        if (this.existsByNameOrCode(modifyRoleRequest.getRoleName(), modifyRoleRequest.getRoleCode())) {
             throw new BusinessException("该角色名称或标识已存在");
         }
 

@@ -6,10 +6,10 @@ import lombok.Data;
  * 角色响应类
  *
  * @author 韩朝阳
- * @since 2023/3/24
+ * @since 2023/3/23
  */
 @Data
-public class FindRolePageResponse {
+public class FindRoleResponse {
 
     /**
      * 角色主键
