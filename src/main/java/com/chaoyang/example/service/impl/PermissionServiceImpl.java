@@ -3,10 +3,8 @@ package com.chaoyang.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.chaoyang.example.entity.dto.request.CreatePermissionRequest;
-import com.chaoyang.example.entity.dto.request.FindInactivePermissionPageRequest;
-import com.chaoyang.example.entity.dto.request.ModifyPermissionRequest;
-import com.chaoyang.example.entity.dto.request.RemovePermissionRequest;
+import com.chaoyang.example.entity.dto.request.*;
+import com.chaoyang.example.entity.dto.response.FindPermissionResponse;
 import com.chaoyang.example.entity.dto.response.InactivePermissionResponse;
 import com.chaoyang.example.entity.po.Permission;
 import com.chaoyang.example.entity.po.RolePermission;
@@ -20,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -81,6 +80,23 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public List<Permission> findAll() {
         return this.list();
+    }
+
+    @Override
+    public FindPermissionResponse findPermissionResponse(FindPermissionRequest findPermissionRequest) {
+        Permission permission = this.getById(findPermissionRequest.getPermissionId());
+
+        if (Objects.isNull(permission)) {
+            throw new BusinessException("权限不存在");
+        }
+
+        FindPermissionResponse findPermissionResponse = new FindPermissionResponse();
+
+        findPermissionResponse.setPermissionId(permission.getId());
+        findPermissionResponse.setPermissionName(permission.getName());
+        findPermissionResponse.setPermissionCode(permission.getCode());
+
+        return findPermissionResponse;
     }
 
     @Override

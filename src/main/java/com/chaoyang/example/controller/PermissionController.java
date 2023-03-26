@@ -3,6 +3,8 @@ package com.chaoyang.example.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.FindInactivePermissionPageRequest;
+import com.chaoyang.example.entity.dto.request.FindPermissionRequest;
+import com.chaoyang.example.entity.dto.response.FindPermissionResponse;
 import com.chaoyang.example.entity.dto.response.InactivePermissionResponse;
 import com.chaoyang.example.service.PermissionService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class PermissionController {
 
     private final PermissionService permissionService;
+
+    @GetMapping("/permission")
+    public Result<FindPermissionResponse> findPermission(FindPermissionRequest findPermissionRequest) {
+        FindPermissionResponse findPermissionResponse = this.permissionService.findPermissionResponse(findPermissionRequest);
+
+        return Result.success(findPermissionResponse);
+    }
 
     @GetMapping("/permission/inactive/page")
     public Result<Page<InactivePermissionResponse>> findInactivePermissionPage(FindInactivePermissionPageRequest findInactivePermissionPageRequest) {
