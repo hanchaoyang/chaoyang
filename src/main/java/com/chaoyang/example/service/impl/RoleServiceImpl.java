@@ -50,10 +50,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     public boolean existsByNameOrCode(String name, String code, Long excludeId) {
         LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.and(orQueryWrapper -> {
-            orQueryWrapper.eq(Role::getName, name);
-            orQueryWrapper.or();
-            orQueryWrapper.eq(Role::getCode, code);
+        queryWrapper.and(nestedQueryWrapper -> {
+            nestedQueryWrapper.eq(Role::getName, name);
+            nestedQueryWrapper.or();
+            nestedQueryWrapper.eq(Role::getCode, code);
         });
         queryWrapper.ne(Role::getId, excludeId);
 
