@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.PermissionResponse;
-import com.chaoyang.example.entity.dto.response.InactivePermissionResponse;
 import com.chaoyang.example.entity.po.Permission;
 import com.chaoyang.example.entity.po.RolePermission;
 import com.chaoyang.example.exception.BusinessException;
@@ -64,11 +63,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public Permission findById(Long id) {
-        return this.getById(id);
-    }
-
-    @Override
     public List<Permission> findByIds(List<Long> ids) {
         LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
 
@@ -78,16 +72,11 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public List<Permission> findAll() {
-        return this.list();
-    }
-
-    @Override
-    public PermissionResponse findPermissionResponse(FindPermissionRequest findPermissionRequest) {
+    public PermissionResponse find(FindPermissionRequest findPermissionRequest) {
         Permission permission = this.getById(findPermissionRequest.getPermissionId());
 
         if (Objects.isNull(permission)) {
-            throw new BusinessException("权限不存在");
+            throw new BusinessException("该权限不存在");
         }
 
         PermissionResponse permissionResponse = new PermissionResponse();
@@ -100,7 +89,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public Page<InactivePermissionResponse> findInactivePermissionPage(FindInactivePermissionPageRequest findInactivePermissionPageRequest) {
+    public Page<PermissionResponse> findInactivePage(FindInactivePermissionPageRequest findInactivePermissionPageRequest) {
         List<RolePermission> rolePermissions = this.rolePermissionService.findByRoleId(findInactivePermissionPageRequest.getRoleId());
 
         List<Long> excludedIds = rolePermissions.stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
@@ -113,18 +102,18 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
         this.page(permissionPage, queryWrapper);
 
-        Page<InactivePermissionResponse> inactivePermissionResponsePage = new Page<>();
+        Page<PermissionResponse> inactivePermissionResponsePage = new Page<>();
 
         BeanUtils.copyProperties(permissionPage, inactivePermissionResponsePage, "records");
 
         inactivePermissionResponsePage.setRecords(permissionPage.getRecords().stream().map(permission -> {
-            InactivePermissionResponse inactivePermissionResponse = new InactivePermissionResponse();
+            PermissionResponse permissionResponse = new PermissionResponse();
 
-            inactivePermissionResponse.setPermissionId(permission.getId());
-            inactivePermissionResponse.setPermissionName(permission.getName());
-            inactivePermissionResponse.setPermissionCode(permission.getCode());
+            permissionResponse.setPermissionId(permission.getId());
+            permissionResponse.setPermissionName(permission.getName());
+            permissionResponse.setPermissionCode(permission.getCode());
 
-            return inactivePermissionResponse;
+            return permissionResponse;
         }).collect(Collectors.toList()));
 
         return inactivePermissionResponsePage;
@@ -132,16 +121,10 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Override
     public void create(CreatePermissionRequest createPermissionRequest) {
-        /*
-         * 判断权限名称或标识是否已存在
-         */
         if (this.notExistsByNameOrCode(createPermissionRequest.getPermissionName(), createPermissionRequest.getPermissionCode())) {
             throw new BusinessException("该权限名称或标识已存在");
         }
 
-        /*
-         * 保存
-         */
         Permission permission = new Permission();
 
         permission.setName(createPermissionRequest.getPermissionName());
@@ -154,23 +137,14 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Override
     public void modify(ModifyPermissionRequest modifyPermissionRequest) {
-        /*
-         * 判断是否存在
-         */
         if (this.notExistsById(modifyPermissionRequest.getPermissionId())) {
             throw new BusinessException("该权限不存在");
         }
 
-        /*
-         * 判断权限名称或标识是否已存在
-         */
         if (this.notExistsByNameOrCode(modifyPermissionRequest.getPermissionName(), modifyPermissionRequest.getPermissionCode())) {
             throw new BusinessException("该权限名称或标识已存在");
         }
 
-        /*
-         * 保存
-         */
         Permission permission = new Permission();
 
         permission.setId(modifyPermissionRequest.getPermissionId());
@@ -185,23 +159,14 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void remove(RemovePermissionRequest removePermissionRequest) {
-        /*
-         * 判断是否存在
-         */
         if (this.notExistsById(removePermissionRequest.getPermissionId())) {
             throw new BusinessException("该权限不存在");
         }
 
-        /*
-         * 删除
-         */
         if (!this.removeById(removePermissionRequest.getPermissionId())) {
             throw new BusinessException("删除权限失败");
         }
 
-        /*
-         * 删除角色权限关联
-         */
         this.rolePermissionService.removeByPermissionId(removePermissionRequest.getPermissionId());
     }
 

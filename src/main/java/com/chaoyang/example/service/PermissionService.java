@@ -33,14 +33,9 @@ public interface PermissionService extends IService<Permission> {
     boolean existsByNameOrCode(String name, String code);
 
     /**
-     * 根据名称或标识查询权限是否存在
+     * 根据名称或标识查询权限是否不存在
      */
     boolean notExistsByNameOrCode(String name, String code);
-
-    /**
-     * 根据主键查询权限
-     */
-    Permission findById(Long id);
 
     /**
      * 根据主键集合查询权限
@@ -48,16 +43,14 @@ public interface PermissionService extends IService<Permission> {
    List<Permission> findByIds(List<Long> ids);
 
     /**
-     * 查询全部权限
+     * 根据主键集合查询
      */
-    List<Permission> findAll();
-
-    PermissionResponse findPermissionResponse(FindPermissionRequest findPermissionRequest);
+    PermissionResponse find(FindPermissionRequest findPermissionRequest);
 
     /**
      * 根据角色主键分页查询未关联的权限
      */
-    Page<InactivePermissionResponse> findInactivePermissionPage(FindInactivePermissionPageRequest findInactivePermissionPageRequest);
+    Page<PermissionResponse> findInactivePage(FindInactivePermissionPageRequest findInactivePermissionPageRequest);
 
     /**
      * 添加权限

@@ -15,21 +15,21 @@ public class RolePermissionResponse {
      * 角色权限主键
      */
     private Long rolePermissionId;
-//
-//    /**
-//     * 角色主键
-//     */
-//    private Long roleId;
-//
-//    /**
-//     * 角色名称
-//     */
-//    private String roleName;
-//
-//    /**
-//     * 角色标识
-//     */
-//    private String roleCode;
+
+    /**
+     * 角色主键
+     */
+    private Long roleId;
+
+    /**
+     * 角色名称
+     */
+    private String roleName;
+
+    /**
+     * 角色标识
+     */
+    private String roleCode;
 
     /**
      * 权限主键

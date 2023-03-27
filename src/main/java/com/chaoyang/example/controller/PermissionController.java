@@ -5,7 +5,6 @@ import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.FindInactivePermissionPageRequest;
 import com.chaoyang.example.entity.dto.request.FindPermissionRequest;
 import com.chaoyang.example.entity.dto.response.PermissionResponse;
-import com.chaoyang.example.entity.dto.response.InactivePermissionResponse;
 import com.chaoyang.example.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,14 +24,14 @@ public class PermissionController {
 
     @GetMapping("/permission")
     public Result<PermissionResponse> findPermission(FindPermissionRequest findPermissionRequest) {
-        PermissionResponse permissionResponse = this.permissionService.findPermissionResponse(findPermissionRequest);
+        PermissionResponse permissionResponse = this.permissionService.find(findPermissionRequest);
 
         return Result.success(permissionResponse);
     }
 
     @GetMapping("/permission/inactive/page")
-    public Result<Page<InactivePermissionResponse>> findInactivePermissionPage(FindInactivePermissionPageRequest findInactivePermissionPageRequest) {
-        Page<InactivePermissionResponse> inactivePermissionPage = this.permissionService.findInactivePermissionPage(findInactivePermissionPageRequest);
+    public Result<Page<PermissionResponse>> findInactivePermissionPage(FindInactivePermissionPageRequest findInactivePermissionPageRequest) {
+        Page<PermissionResponse> inactivePermissionPage = this.permissionService.findInactivePage(findInactivePermissionPageRequest);
 
         return Result.success(inactivePermissionPage);
     }
