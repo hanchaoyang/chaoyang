@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.PermissionResponse;
-import com.chaoyang.example.entity.dto.response.InactivePermissionResponse;
 import com.chaoyang.example.entity.po.Permission;
 
 import java.util.List;
