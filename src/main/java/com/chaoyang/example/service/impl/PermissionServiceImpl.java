@@ -121,7 +121,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Override
     public void create(CreatePermissionRequest createPermissionRequest) {
-        if (this.notExistsByNameOrCode(createPermissionRequest.getPermissionName(), createPermissionRequest.getPermissionCode())) {
+        if (this.existsByNameOrCode(createPermissionRequest.getPermissionName(), createPermissionRequest.getPermissionCode())) {
             throw new BusinessException("该权限名称或标识已存在");
         }
 
@@ -141,7 +141,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             throw new BusinessException("该权限不存在");
         }
 
-        if (this.notExistsByNameOrCode(modifyPermissionRequest.getPermissionName(), modifyPermissionRequest.getPermissionCode())) {
+        if (this.existsByNameOrCode(modifyPermissionRequest.getPermissionName(), modifyPermissionRequest.getPermissionCode())) {
             throw new BusinessException("该权限名称或标识已存在");
         }
 

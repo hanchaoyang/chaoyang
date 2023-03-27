@@ -23,14 +23,14 @@ public class RoleController {
     private final RoleService roleService;
 
     @GetMapping("/role")
-    public Result<RoleResponse> findRole(FindRoleRequest findRoleRequest) {
+    public Result<RoleResponse> find(FindRoleRequest findRoleRequest) {
         RoleResponse roleResponse = this.roleService.find(findRoleRequest);
 
         return Result.success(roleResponse);
     }
 
     @GetMapping("/role/page")
-    public Result<Page<RoleResponse>> findRolePage(FindRolePageRequest findRolePageRequest) {
+    public Result<Page<RoleResponse>> findPage(FindRolePageRequest findRolePageRequest) {
         Page<RoleResponse> roleResponsePage = this.roleService.findPage(findRolePageRequest);
 
         return Result.success(roleResponsePage);
