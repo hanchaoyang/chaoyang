@@ -25,10 +25,10 @@ public class RolePermissionController {
     private final RolePermissionService rolePermissionService;
 
     @GetMapping("/role-permission/page")
-    public Result<Page<RolePermissionResponse>> findRolePermissionPage(FindRolePermissionPageRequest findRolePermissionPageRequest) {
-        Page<RolePermissionResponse> findRolePermissionPageResponsePage = this.rolePermissionService.findRolePermissionPage(findRolePermissionPageRequest);
+    public Result<Page<RolePermissionResponse>> findPage(FindRolePermissionPageRequest findRolePermissionPageRequest) {
+        Page<RolePermissionResponse> rolePermissionResponsePage = this.rolePermissionService.findPage(findRolePermissionPageRequest);
 
-        return Result.success(findRolePermissionPageResponsePage);
+        return Result.success(rolePermissionResponsePage);
     }
 
     @PostMapping("/role-permission")
