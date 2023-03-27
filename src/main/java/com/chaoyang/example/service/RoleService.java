@@ -30,7 +30,7 @@ public interface RoleService extends IService<Role> {
     /**
      * 根据名称或标识查询角色是否存在
      */
-    boolean existsByNameOrCode(String name, String code);
+    boolean existsByNameOrCode(String name, String code, Long excludeId);
 
     /**
      * 根据名称或标识查询角色是否存在

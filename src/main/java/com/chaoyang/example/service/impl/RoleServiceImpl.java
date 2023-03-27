@@ -47,19 +47,22 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    public boolean existsByNameOrCode(String name, String code) {
+    public boolean existsByNameOrCode(String name, String code, Long excludeId) {
         LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.eq(Role::getName, name);
-        queryWrapper.or();
-        queryWrapper.eq(Role::getCode, code);
+        queryWrapper.and(orQueryWrapper -> {
+            orQueryWrapper.eq(Role::getName, name);
+            orQueryWrapper.or();
+            orQueryWrapper.eq(Role::getCode, code);
+        });
+        queryWrapper.ne(Role::getId, excludeId);
 
         return this.count(queryWrapper) != 0;
     }
 
     @Override
     public boolean notExistsByNameOrCode(String name, String code) {
-        return !this.existsByNameOrCode(name, code);
+        return !this.existsByNameOrCode(name, code, null);
     }
 
     @Override
@@ -131,7 +134,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         /*
          * 判断角色名称或标识是否已存在
          */
-        if (this.existsByNameOrCode(createRoleRequest.getRoleName(), createRoleRequest.getRoleCode())) {
+        if (this.existsByNameOrCode(createRoleRequest.getRoleName(), createRoleRequest.getRoleCode(), null)) {
             throw new BusinessException("该角色名称或标识已存在");
         }
 
@@ -160,7 +163,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         /*
          * 判断权限名称或标识是否已存在
          */
-        if (this.existsByNameOrCode(modifyRoleRequest.getRoleName(), modifyRoleRequest.getRoleCode())) {
+        if (this.existsByNameOrCode(modifyRoleRequest.getRoleName(), modifyRoleRequest.getRoleCode(), modifyRoleRequest.getRoleId())) {
             throw new BusinessException("该角色名称或标识已存在");
         }
 
