@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
 import com.chaoyang.example.entity.dto.request.FindRolePermissionPageRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
-import com.chaoyang.example.entity.dto.response.FindRolePermissionPageResponse;
-import com.chaoyang.example.entity.po.RolePermission;
+import com.chaoyang.example.entity.dto.response.RolePermissionResponse;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ import java.util.List;
  * @author 韩朝阳
  * @since 2023/3/17
  */
-public interface RolePermissionService extends IService<RolePermission> {
+public interface RolePermissionService extends IService<com.chaoyang.example.entity.po.RolePermission> {
 
     /**
      * 根据主键查询角色权限是否存在
@@ -36,17 +35,17 @@ public interface RolePermissionService extends IService<RolePermission> {
     /**
      * 根据角色主键查询角色权限
      */
-    List<RolePermission> findByRoleId(Long roleId);
+    List<com.chaoyang.example.entity.po.RolePermission> findByRoleId(Long roleId);
 
     /**
      * 根据角色主键集合查询角色权限
      */
-    List<RolePermission> findByRoleIds(List<Long> roleIds);
+    List<com.chaoyang.example.entity.po.RolePermission> findByRoleIds(List<Long> roleIds);
 
     /**
      * 根据角色主键分页查询角色权限
      */
-    Page<FindRolePermissionPageResponse> findRolePermissionPage(FindRolePermissionPageRequest findRolePermissionPageRequest);
+    Page<RolePermissionResponse> findRolePermissionPage(FindRolePermissionPageRequest findRolePermissionPageRequest);
 
     /**
      * 添加角色权限

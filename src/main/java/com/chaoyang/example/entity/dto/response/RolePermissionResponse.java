@@ -3,13 +3,13 @@ package com.chaoyang.example.entity.dto.response;
 import lombok.Data;
 
 /**
- * 分页查询角色权限响应类
+ * 角色权限响应类
  *
  * @author 韩朝阳
  * @since 2023/3/23
  */
 @Data
-public class FindRolePermissionPageResponse {
+public class RolePermissionResponse {
 
     /**
      * 角色权限主键

@@ -3,7 +3,7 @@ package com.chaoyang.example.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chaoyang.example.entity.dto.request.*;
-import com.chaoyang.example.entity.dto.response.FindPermissionResponse;
+import com.chaoyang.example.entity.dto.response.PermissionResponse;
 import com.chaoyang.example.entity.dto.response.InactivePermissionResponse;
 import com.chaoyang.example.entity.po.Permission;
 
@@ -52,7 +52,7 @@ public interface PermissionService extends IService<Permission> {
      */
     List<Permission> findAll();
 
-    FindPermissionResponse findPermissionResponse(FindPermissionRequest findPermissionRequest);
+    PermissionResponse findPermissionResponse(FindPermissionRequest findPermissionRequest);
 
     /**
      * 根据角色主键分页查询未关联的权限

@@ -9,6 +9,7 @@ import lombok.Data;
  * @since 2023/3/23
  */
 @Data
+@Deprecated
 public class InactivePermissionResponse {
 
     /**

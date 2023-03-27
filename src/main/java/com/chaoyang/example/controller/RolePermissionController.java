@@ -5,7 +5,7 @@ import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
 import com.chaoyang.example.entity.dto.request.FindRolePermissionPageRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
-import com.chaoyang.example.entity.dto.response.FindRolePermissionPageResponse;
+import com.chaoyang.example.entity.dto.response.RolePermissionResponse;
 import com.chaoyang.example.service.RolePermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +25,8 @@ public class RolePermissionController {
     private final RolePermissionService rolePermissionService;
 
     @GetMapping("/role-permission/page")
-    public Result<Page<FindRolePermissionPageResponse>> findRolePermissionPage(FindRolePermissionPageRequest findRolePermissionPageRequest) {
-        Page<FindRolePermissionPageResponse> findRolePermissionPageResponsePage = this.rolePermissionService.findRolePermissionPage(findRolePermissionPageRequest);
+    public Result<Page<RolePermissionResponse>> findRolePermissionPage(FindRolePermissionPageRequest findRolePermissionPageRequest) {
+        Page<RolePermissionResponse> findRolePermissionPageResponsePage = this.rolePermissionService.findRolePermissionPage(findRolePermissionPageRequest);
 
         return Result.success(findRolePermissionPageResponsePage);
     }

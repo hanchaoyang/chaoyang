@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.*;
-import com.chaoyang.example.entity.dto.response.FindPermissionResponse;
+import com.chaoyang.example.entity.dto.response.PermissionResponse;
 import com.chaoyang.example.entity.dto.response.InactivePermissionResponse;
 import com.chaoyang.example.entity.po.Permission;
 import com.chaoyang.example.entity.po.RolePermission;
@@ -83,20 +83,20 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public FindPermissionResponse findPermissionResponse(FindPermissionRequest findPermissionRequest) {
+    public PermissionResponse findPermissionResponse(FindPermissionRequest findPermissionRequest) {
         Permission permission = this.getById(findPermissionRequest.getPermissionId());
 
         if (Objects.isNull(permission)) {
             throw new BusinessException("权限不存在");
         }
 
-        FindPermissionResponse findPermissionResponse = new FindPermissionResponse();
+        PermissionResponse permissionResponse = new PermissionResponse();
 
-        findPermissionResponse.setPermissionId(permission.getId());
-        findPermissionResponse.setPermissionName(permission.getName());
-        findPermissionResponse.setPermissionCode(permission.getCode());
+        permissionResponse.setPermissionId(permission.getId());
+        permissionResponse.setPermissionName(permission.getName());
+        permissionResponse.setPermissionCode(permission.getCode());
 
-        return findPermissionResponse;
+        return permissionResponse;
     }
 
     @Override

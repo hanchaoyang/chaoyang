@@ -9,6 +9,7 @@ import lombok.Data;
  * @since 2023/3/24
  */
 @Data
+@Deprecated
 public class FindRolePageResponse {
 
     /**

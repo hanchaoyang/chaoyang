@@ -9,7 +9,7 @@ import lombok.Data;
  * @since 2023/3/23
  */
 @Data
-public class FindRoleResponse {
+public class RoleResponse {
 
     /**
      * 角色主键

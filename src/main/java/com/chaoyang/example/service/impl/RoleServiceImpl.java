@@ -4,8 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.*;
-import com.chaoyang.example.entity.dto.response.FindRolePageResponse;
-import com.chaoyang.example.entity.dto.response.FindRoleResponse;
+import com.chaoyang.example.entity.dto.response.RoleResponse;
 import com.chaoyang.example.entity.po.Role;
 import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.RoleMapper;
@@ -61,16 +60,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    public boolean notExistsByNameOrCode(String name, String code) {
-        return !this.existsByNameOrCode(name, code, null);
-    }
-
-    @Override
-    public Role findById(Long id) {
-        return this.getById(id);
-    }
-
-    @Override
     public List<Role> findByIds(List<Long> ids) {
         LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
 
@@ -80,29 +69,24 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    public List<Role> findAll() {
-        return this.list();
-    }
-
-    @Override
-    public FindRoleResponse findRoleResponse(FindRoleRequest findRoleRequest) {
+    public RoleResponse find(FindRoleRequest findRoleRequest) {
         Role role = this.getById(findRoleRequest.getRoleId());
 
         if (Objects.isNull(role)) {
             throw new BusinessException("该角色不存在");
         }
 
-        FindRoleResponse findRoleResponse = new FindRoleResponse();
+        RoleResponse roleResponse = new RoleResponse();
 
-        findRoleResponse.setRoleId(role.getId());
-        findRoleResponse.setRoleName(role.getName());
-        findRoleResponse.setRoleCode(role.getCode());
+        roleResponse.setRoleId(role.getId());
+        roleResponse.setRoleName(role.getName());
+        roleResponse.setRoleCode(role.getCode());
 
-        return findRoleResponse;
+        return roleResponse;
     }
 
     @Override
-    public Page<FindRolePageResponse> findRolePage(FindRolePageRequest findRolePageRequest) {
+    public Page<RoleResponse> findPage(FindRolePageRequest findRolePageRequest) {
         Page<Role> rolePage = new Page<>(findRolePageRequest.getCurrent(), findRolePageRequest.getSize());
 
         LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
@@ -112,18 +96,18 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
         this.page(rolePage, queryWrapper);
 
-        Page<FindRolePageResponse> roleResponsePage = new Page<>();
+        Page<RoleResponse> roleResponsePage = new Page<>();
 
         BeanUtils.copyProperties(rolePage, roleResponsePage, "records");
 
         roleResponsePage.setRecords(rolePage.getRecords().stream().map(role -> {
-            FindRolePageResponse findRolePageResponse = new FindRolePageResponse();
+            RoleResponse roleResponse = new RoleResponse();
 
-            findRolePageResponse.setRoleId(role.getId());
-            findRolePageResponse.setRoleName(role.getName());
-            findRolePageResponse.setRoleCode(role.getCode());
+            roleResponse.setRoleId(role.getId());
+            roleResponse.setRoleName(role.getName());
+            roleResponse.setRoleCode(role.getCode());
 
-            return findRolePageResponse;
+            return roleResponse;
         }).collect(Collectors.toList()));
 
         return roleResponsePage;
@@ -131,16 +115,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     @Override
     public void create(CreateRoleRequest createRoleRequest) {
-        /*
-         * 判断角色名称或标识是否已存在
-         */
         if (this.existsByNameOrCode(createRoleRequest.getRoleName(), createRoleRequest.getRoleCode(), null)) {
             throw new BusinessException("该角色名称或标识已存在");
         }
 
-        /*
-         * 保存
-         */
         Role role = new Role();
 
         role.setName(createRoleRequest.getRoleName());
@@ -153,23 +131,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     @Override
     public void modify(ModifyRoleRequest modifyRoleRequest) {
-        /*
-         * 判断是否存在
-         */
         if (this.notExistsById(modifyRoleRequest.getRoleId())) {
             throw new BusinessException("该角色不存在");
         }
 
-        /*
-         * 判断权限名称或标识是否已存在
-         */
         if (this.existsByNameOrCode(modifyRoleRequest.getRoleName(), modifyRoleRequest.getRoleCode(), modifyRoleRequest.getRoleId())) {
             throw new BusinessException("该角色名称或标识已存在");
         }
 
-        /*
-         * 保存
-         */
         Role role = new Role();
 
         role.setId(modifyRoleRequest.getRoleId());
@@ -184,23 +153,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void remove(RemoveRoleRequest removeRoleRequest) {
-        /*
-         * 判断是否存在
-         */
         if (this.notExistsById(removeRoleRequest.getRoleId())) {
             throw new BusinessException("该角色不存在");
         }
 
-        /*
-         * 删除
-         */
         if (!this.removeById(removeRoleRequest.getRoleId())) {
             throw new BusinessException("删除角色失败");
         }
 
-        /*
-         * 删除角色权限关联
-         */
         this.rolePermissionService.removeByRoleId(removeRoleRequest.getRoleId());
     }
 

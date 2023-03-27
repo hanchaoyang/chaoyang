@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
 import com.chaoyang.example.entity.dto.request.FindRolePermissionPageRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
-import com.chaoyang.example.entity.dto.response.FindRolePermissionPageResponse;
+import com.chaoyang.example.entity.dto.response.RolePermissionResponse;
 import com.chaoyang.example.entity.po.Permission;
 import com.chaoyang.example.entity.po.RolePermission;
 import com.chaoyang.example.exception.BusinessException;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * @since 2023/3/17
  */
 @Service
-public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper, RolePermission> implements RolePermissionService {
+public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper, com.chaoyang.example.entity.po.RolePermission> implements RolePermissionService {
 
     private final RoleService roleService;
 
@@ -46,9 +46,9 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
 
     @Override
     public boolean existsById(Long id) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<com.chaoyang.example.entity.po.RolePermission> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.eq(RolePermission::getId, id);
+        queryWrapper.eq(com.chaoyang.example.entity.po.RolePermission::getId, id);
 
         return this.count(queryWrapper) != 0;
     }
@@ -60,47 +60,47 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
 
     @Override
     public boolean existsByRoleIdAndPermissionId(Long roleId, Long permissionId) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<com.chaoyang.example.entity.po.RolePermission> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.eq(RolePermission::getRoleId, roleId);
-        queryWrapper.eq(RolePermission::getPermissionId, permissionId);
+        queryWrapper.eq(com.chaoyang.example.entity.po.RolePermission::getRoleId, roleId);
+        queryWrapper.eq(com.chaoyang.example.entity.po.RolePermission::getPermissionId, permissionId);
 
         return this.count(queryWrapper) != 0;
     }
 
     @Override
-    public List<RolePermission> findByRoleId(Long roleId) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
+    public List<com.chaoyang.example.entity.po.RolePermission> findByRoleId(Long roleId) {
+        LambdaQueryWrapper<com.chaoyang.example.entity.po.RolePermission> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.eq(RolePermission::getRoleId, roleId);
-
-        return this.list(queryWrapper);
-    }
-
-    @Override
-    public List<RolePermission> findByRoleIds(List<Long> roleIds) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.in(RolePermission::getRoleId, roleIds);
+        queryWrapper.eq(com.chaoyang.example.entity.po.RolePermission::getRoleId, roleId);
 
         return this.list(queryWrapper);
     }
 
     @Override
-    public Page<FindRolePermissionPageResponse> findRolePermissionPage(FindRolePermissionPageRequest findRolePermissionPageRequest) {
-        Page<RolePermission> rolePermissionPage = new Page<>( findRolePermissionPageRequest.getCurrent(), findRolePermissionPageRequest.getSize());
+    public List<com.chaoyang.example.entity.po.RolePermission> findByRoleIds(List<Long> roleIds) {
+        LambdaQueryWrapper<com.chaoyang.example.entity.po.RolePermission> queryWrapper = new LambdaQueryWrapper<>();
 
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(com.chaoyang.example.entity.po.RolePermission::getRoleId, roleIds);
 
-        queryWrapper.eq(RolePermission::getRoleId, findRolePermissionPageRequest.getRoleId());
+        return this.list(queryWrapper);
+    }
+
+    @Override
+    public Page<RolePermissionResponse> findRolePermissionPage(FindRolePermissionPageRequest findRolePermissionPageRequest) {
+        Page<com.chaoyang.example.entity.po.RolePermission> rolePermissionPage = new Page<>( findRolePermissionPageRequest.getCurrent(), findRolePermissionPageRequest.getSize());
+
+        LambdaQueryWrapper<com.chaoyang.example.entity.po.RolePermission> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(com.chaoyang.example.entity.po.RolePermission::getRoleId, findRolePermissionPageRequest.getRoleId());
 
         this.page(rolePermissionPage, queryWrapper);
 
-        Page<FindRolePermissionPageResponse> rolePermissionResponsePage = new Page<>();
+        Page<RolePermissionResponse> rolePermissionResponsePage = new Page<>();
 
         BeanUtils.copyProperties(rolePermissionPage, rolePermissionResponsePage, "records");
 
-        List<Long> permissionIds = rolePermissionPage.getRecords().stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
+        List<Long> permissionIds = rolePermissionPage.getRecords().stream().map(com.chaoyang.example.entity.po.RolePermission::getPermissionId).collect(Collectors.toList());
 
         Map<Long, Permission> permissionMap;
 
@@ -117,14 +117,14 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
 
             Permission permission = permissionMap.get(permissionId);
 
-            FindRolePermissionPageResponse findRolePermissionPageResponse = new FindRolePermissionPageResponse();
+            RolePermissionResponse findRolePermissionResponsePageResponse = new RolePermissionResponse();
 
-            findRolePermissionPageResponse.setRolePermissionId(rolePermission.getId());
-            findRolePermissionPageResponse.setPermissionId(rolePermission.getPermissionId());
-            findRolePermissionPageResponse.setPermissionName(permission.getName());
-            findRolePermissionPageResponse.setPermissionCode(permission.getCode());
+            findRolePermissionResponsePageResponse.setRolePermissionId(rolePermission.getId());
+            findRolePermissionResponsePageResponse.setPermissionId(rolePermission.getPermissionId());
+            findRolePermissionResponsePageResponse.setPermissionName(permission.getName());
+            findRolePermissionResponsePageResponse.setPermissionCode(permission.getCode());
 
-            return findRolePermissionPageResponse;
+            return findRolePermissionResponsePageResponse;
         }).collect(Collectors.toList()));
 
         return rolePermissionResponsePage;
@@ -144,7 +144,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
             throw new BusinessException("该角色权限已存在");
         }
 
-        RolePermission rolePermission = new RolePermission();
+        com.chaoyang.example.entity.po.RolePermission rolePermission = new com.chaoyang.example.entity.po.RolePermission();
 
         rolePermission.setRoleId(createRolePermissionRequest.getRoleId());
         rolePermission.setPermissionId(createRolePermissionRequest.getPermissionId());
@@ -182,9 +182,9 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
 
     @Override
     public void removeByPermissionId(Long permissionId) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<com.chaoyang.example.entity.po.RolePermission> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.eq(RolePermission::getPermissionId, permissionId);
+        queryWrapper.eq(com.chaoyang.example.entity.po.RolePermission::getPermissionId, permissionId);
 
         this.remove(queryWrapper);
     }

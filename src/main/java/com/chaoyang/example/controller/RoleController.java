@@ -3,8 +3,7 @@ package com.chaoyang.example.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.*;
-import com.chaoyang.example.entity.dto.response.FindRolePageResponse;
-import com.chaoyang.example.entity.dto.response.FindRoleResponse;
+import com.chaoyang.example.entity.dto.response.RoleResponse;
 import com.chaoyang.example.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,17 +23,17 @@ public class RoleController {
     private final RoleService roleService;
 
     @GetMapping("/role")
-    public Result<FindRoleResponse> findRole(FindRoleRequest findRoleRequest) {
-        FindRoleResponse findRoleResponse = this.roleService.findRoleResponse(findRoleRequest);
+    public Result<RoleResponse> findRole(FindRoleRequest findRoleRequest) {
+        RoleResponse roleResponse = this.roleService.find(findRoleRequest);
 
-        return Result.success(findRoleResponse);
+        return Result.success(roleResponse);
     }
 
     @GetMapping("/role/page")
-    public Result<Page<FindRolePageResponse>> findRolePage(FindRolePageRequest findRolePageRequest) {
-        Page<FindRolePageResponse> findRolePageResponsePage = this.roleService.findRolePage(findRolePageRequest);
+    public Result<Page<RoleResponse>> findRolePage(FindRolePageRequest findRolePageRequest) {
+        Page<RoleResponse> roleResponsePage = this.roleService.findPage(findRolePageRequest);
 
-        return Result.success(findRolePageResponsePage);
+        return Result.success(roleResponsePage);
     }
 
     @PostMapping("/role")
