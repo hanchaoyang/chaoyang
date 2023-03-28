@@ -29,7 +29,7 @@ public interface PermissionService extends IService<Permission> {
     /**
      * 根据名称或标识查询权限是否存在
      */
-    boolean existsByNameOrCode(String name, String code);
+    boolean existsByNameOrCode(String name, String code, Long excludeId);
 
     /**
      * 根据名称或标识查询权限是否不存在
@@ -45,6 +45,11 @@ public interface PermissionService extends IService<Permission> {
      * 根据主键集合查询
      */
     PermissionResponse find(FindPermissionRequest findPermissionRequest);
+
+    /**
+     * 根据角色主键分页查询权限
+     */
+    Page<PermissionResponse> findPage(FindPermissionPageRequest findPermissionPageRequest);
 
     /**
      * 根据角色主键分页查询未关联的权限
@@ -65,5 +70,4 @@ public interface PermissionService extends IService<Permission> {
      * 删除权限
      */
     void remove(RemovePermissionRequest removePermissionRequest);
-
 }

@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.PermissionResponse;
+import com.chaoyang.example.entity.dto.response.RoleResponse;
 import com.chaoyang.example.entity.po.Permission;
+import com.chaoyang.example.entity.po.Role;
 import com.chaoyang.example.entity.po.RolePermission;
 import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.PermissionMapper;
@@ -47,19 +49,22 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public boolean existsByNameOrCode(String name, String code) {
+    public boolean existsByNameOrCode(String name, String code, Long excludeId) {
         LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.eq(Permission::getName, name);
-        queryWrapper.or();
-        queryWrapper.eq(Permission::getCode, code);
+        queryWrapper.and(nestedQueryWrapper -> {
+            nestedQueryWrapper.eq(Permission::getName, name);
+            nestedQueryWrapper.or();
+            nestedQueryWrapper.eq(Permission::getCode, code);
+        });
+        queryWrapper.ne(Objects.nonNull(excludeId), Permission::getId, excludeId);
 
         return this.count(queryWrapper) != 0;
     }
 
     @Override
     public boolean notExistsByNameOrCode(String name, String code) {
-        return !this.existsByNameOrCode(name, code);
+        return !this.existsByNameOrCode(name, code, null);
     }
 
     @Override
@@ -86,6 +91,34 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         permissionResponse.setPermissionCode(permission.getCode());
 
         return permissionResponse;
+    }
+
+    @Override
+    public Page<PermissionResponse> findPage(FindPermissionPageRequest findPermissionPageRequest) {
+        Page<Permission> permissionPage = new Page<>(findPermissionPageRequest.getCurrent(), findPermissionPageRequest.getSize());
+
+        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.like(Objects.nonNull(findPermissionPageRequest.getPermissionName()), Permission::getName, findPermissionPageRequest.getPermissionName());
+        queryWrapper.like(Objects.nonNull(findPermissionPageRequest.getPermissionCode()), Permission::getCode, findPermissionPageRequest.getPermissionCode());
+
+        this.page(permissionPage, queryWrapper);
+
+        Page<PermissionResponse> permissionResponsePage = new Page<>();
+
+        BeanUtils.copyProperties(permissionPage, permissionResponsePage, "records");
+
+        permissionResponsePage.setRecords(permissionPage.getRecords().stream().map(permission -> {
+            PermissionResponse permissionResponse = new PermissionResponse();
+
+            permissionResponse.setPermissionId(permission.getId());
+            permissionResponse.setPermissionName(permission.getName());
+            permissionResponse.setPermissionCode(permission.getCode());
+
+            return permissionResponse;
+        }).collect(Collectors.toList()));
+
+        return permissionResponsePage;
     }
 
     @Override
@@ -121,7 +154,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Override
     public void create(CreatePermissionRequest createPermissionRequest) {
-        if (this.existsByNameOrCode(createPermissionRequest.getPermissionName(), createPermissionRequest.getPermissionCode())) {
+        if (this.existsByNameOrCode(createPermissionRequest.getPermissionName(), createPermissionRequest.getPermissionCode(), null)) {
             throw new BusinessException("该权限名称或标识已存在");
         }
 
@@ -141,7 +174,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             throw new BusinessException("该权限不存在");
         }
 
-        if (this.existsByNameOrCode(modifyPermissionRequest.getPermissionName(), modifyPermissionRequest.getPermissionCode())) {
+        if (this.existsByNameOrCode(modifyPermissionRequest.getPermissionName(), modifyPermissionRequest.getPermissionCode(), modifyPermissionRequest.getPermissionId())) {
             throw new BusinessException("该权限名称或标识已存在");
         }
 
