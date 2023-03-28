@@ -27,6 +27,11 @@ public class UserResponse {
      */
     private String userPhone;
 
+//    /**
+//     * 用户密码
+//     */
+//    private String userPassword;
+
     /**
      * 用户状态
      *

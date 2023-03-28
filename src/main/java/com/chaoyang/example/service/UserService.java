@@ -22,6 +22,8 @@ public interface UserService extends IService<User> {
 
     User findByPhoneAndPassword(String phone, String password);
 
+    UserResponse find(FindUserRequest findUserRequest);
+
     Page<UserResponse> findPage(FindUserPageRequest findUserPageRequest);
 
     void create(CreateUserRequest createUserRequest);

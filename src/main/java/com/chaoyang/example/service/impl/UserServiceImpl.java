@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.constant.UserStatusConstant;
 import com.chaoyang.example.entity.dto.request.*;
+import com.chaoyang.example.entity.dto.response.PermissionResponse;
 import com.chaoyang.example.entity.dto.response.RoleResponse;
 import com.chaoyang.example.entity.dto.response.UserResponse;
+import com.chaoyang.example.entity.po.Permission;
 import com.chaoyang.example.entity.po.Role;
 import com.chaoyang.example.entity.po.User;
 import com.chaoyang.example.exception.BusinessException;
@@ -66,6 +68,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.eq(User::getPassword, password);
 
         return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public UserResponse find(FindUserRequest findUserRequest) {
+        User user = this.getById(findUserRequest.getUserId());
+
+        if (Objects.isNull(user)) {
+            throw new BusinessException("该用户不存在");
+        }
+
+        UserResponse userResponse = new UserResponse();
+
+        userResponse.setUserId(user.getId());
+        userResponse.setUserNickname(user.getNickname());
+        userResponse.setUserPhone(user.getPhone());
+        userResponse.setUserStatus(user.getStatus());
+
+        return userResponse;
     }
 
     @Override
