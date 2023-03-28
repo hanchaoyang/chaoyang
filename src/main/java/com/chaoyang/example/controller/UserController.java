@@ -5,14 +5,12 @@ import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.CreateUserRequest;
 import com.chaoyang.example.entity.dto.request.FindUserPageRequest;
 import com.chaoyang.example.entity.dto.request.FindUserRequest;
+import com.chaoyang.example.entity.dto.request.ModifyUserRequest;
 import com.chaoyang.example.entity.dto.response.UserResponse;
 import com.chaoyang.example.entity.po.User;
 import com.chaoyang.example.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -45,6 +43,13 @@ public class UserController {
     @PostMapping("/user")
     public Result<Void> create(@RequestBody @Valid CreateUserRequest createUserRequest) {
         this.userService.create(createUserRequest);
+
+        return Result.success();
+    }
+
+    @PutMapping("/user")
+    public Result<Void> create(@RequestBody @Valid ModifyUserRequest modifyUserRequest) {
+        this.userService.modify(modifyUserRequest);
 
         return Result.success();
     }

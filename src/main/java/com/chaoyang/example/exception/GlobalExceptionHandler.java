@@ -40,6 +40,9 @@ public class GlobalExceptionHandler {
         return Result.of(e.getCode(), e.getMessage());
     }
 
+    /**
+     * 参数错误
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         return Result.of(400, "参数错误");
