@@ -1,10 +1,9 @@
 package com.chaoyang.example.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.chaoyang.example.entity.dto.request.CreateUserRequest;
-import com.chaoyang.example.entity.dto.request.ModifyUserRequest;
-import com.chaoyang.example.entity.dto.request.ModifyUserStatusRequest;
-import com.chaoyang.example.entity.dto.request.RemoveUserRequest;
+import com.chaoyang.example.entity.dto.request.*;
+import com.chaoyang.example.entity.dto.response.UserResponse;
 import com.chaoyang.example.entity.po.User;
 
 /**
@@ -22,6 +21,8 @@ public interface UserService extends IService<User> {
     boolean existsByPhone(String phone);
 
     User findByPhoneAndPassword(String phone, String password);
+
+    Page<UserResponse> findPage(FindUserPageRequest findUserPageRequest);
 
     void create(CreateUserRequest createUserRequest);
 

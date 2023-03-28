@@ -3,22 +3,25 @@ package com.chaoyang.example.service.impl;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.constant.UserStatusConstant;
-import com.chaoyang.example.entity.dto.request.CreateUserRequest;
-import com.chaoyang.example.entity.dto.request.ModifyUserRequest;
-import com.chaoyang.example.entity.dto.request.ModifyUserStatusRequest;
-import com.chaoyang.example.entity.dto.request.RemoveUserRequest;
+import com.chaoyang.example.entity.dto.request.*;
+import com.chaoyang.example.entity.dto.response.RoleResponse;
+import com.chaoyang.example.entity.dto.response.UserResponse;
+import com.chaoyang.example.entity.po.Role;
 import com.chaoyang.example.entity.po.User;
 import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.UserMapper;
 import com.chaoyang.example.service.UserRoleService;
 import com.chaoyang.example.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 用户服务层实现类
@@ -63,6 +66,48 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.eq(User::getPassword, password);
 
         return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public Page<UserResponse> findPage(FindUserPageRequest findUserPageRequest) {
+        Page<User> userPage = new Page<>(findUserPageRequest.getCurrent(), findUserPageRequest.getSize());
+
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.like(Objects.nonNull(findUserPageRequest.getUserNickname()), User::getNickname, findUserPageRequest.getUserNickname());
+        queryWrapper.like(Objects.nonNull(findUserPageRequest.getUserPhone()), User::getPhone, findUserPageRequest.getUserPhone());
+        queryWrapper.like(Objects.nonNull(findUserPageRequest.getUserStatus()), User::getStatus, findUserPageRequest.getUserStatus());
+
+        this.page(userPage, queryWrapper);
+
+        Page<UserResponse> userResponsePage = new Page<>();
+
+        BeanUtils.copyProperties(userPage, userResponsePage, "records");
+
+        userResponsePage.setRecords(userPage.getRecords().stream().map(user -> {
+            UserResponse userResponse = new UserResponse();
+
+            userResponse.setUserId(user.getId());
+            userResponse.setUserNickname(user.getNickname());
+            userResponse.setUserPhone(user.getPhone());
+            userResponse.setUserStatus(user.getStatus());
+
+            switch (userResponse.getUserStatus()) {
+                case UserStatusConstant.DISABLE:
+                    userResponse.setUserStatusName("禁用");
+
+                    break;
+                case UserStatusConstant.ENABLE:
+                    userResponse.setUserStatusName("启用");
+
+                    break;
+                default:
+            }
+
+            return userResponse;
+        }).collect(Collectors.toList()));
+
+        return userResponsePage;
     }
 
     @Override
