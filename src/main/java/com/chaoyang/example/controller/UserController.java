@@ -2,10 +2,7 @@ package com.chaoyang.example.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoyang.example.entity.dto.Result;
-import com.chaoyang.example.entity.dto.request.CreateUserRequest;
-import com.chaoyang.example.entity.dto.request.FindUserPageRequest;
-import com.chaoyang.example.entity.dto.request.FindUserRequest;
-import com.chaoyang.example.entity.dto.request.ModifyUserRequest;
+import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.UserResponse;
 import com.chaoyang.example.entity.po.User;
 import com.chaoyang.example.service.UserService;
@@ -50,6 +47,13 @@ public class UserController {
     @PutMapping("/user")
     public Result<Void> create(@RequestBody @Valid ModifyUserRequest modifyUserRequest) {
         this.userService.modify(modifyUserRequest);
+
+        return Result.success();
+    }
+
+    @DeleteMapping("/user")
+    public Result<Void> remove(RemoveUserRequest removeUserRequest) {
+        this.userService.remove(removeUserRequest);
 
         return Result.success();
     }
