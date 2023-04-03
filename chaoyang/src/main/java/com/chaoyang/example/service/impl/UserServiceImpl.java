@@ -159,7 +159,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setId(modifyUserRequest.getUserId());
         user.setNickname(modifyUserRequest.getUserNickname());
         user.setPhone(modifyUserRequest.getUserPhone());
-        user.setPassword(modifyUserRequest.getUserPassword());
+//        user.setPassword(modifyUserRequest.getUserPassword());
 
         if (!this.updateById(user)) {
             throw new BusinessException("修改用户失败");
