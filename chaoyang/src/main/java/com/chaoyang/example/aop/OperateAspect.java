@@ -20,11 +20,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class OperateAspect {
 
-    @Before(value = "@annotation(com.chaoyang.example.annotation.OperateLog)", argNames = "joinPoint, operateLog")
     public void doBefore(JoinPoint joinPoint, OperateLog operateLog) {
-        System.out.println(operateLog.value());
 
-        re
     }
 
 }
