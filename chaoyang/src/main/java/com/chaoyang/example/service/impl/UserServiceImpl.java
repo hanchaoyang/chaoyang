@@ -139,7 +139,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         user.setNickname(createUserRequest.getUserNickname());
         user.setPhone(createUserRequest.getUserPhone());
-        user.setPassword(DigestUtil.md5Hex(DigestUtil.md5Hex(createUserRequest.getUserPassword())));
+        user.setPassword(createUserRequest.getUserPassword());
         user.setStatus(createUserRequest.getUserStatus());
 
         if (!this.save(user)) {
@@ -198,7 +198,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
 
         updateWrapper.eq(User::getId, modifyUserPasswordRequest.getUserId());
-        updateWrapper.set(User::getPassword, DigestUtil.md5Hex(DigestUtil.md5Hex(modifyUserPasswordRequest.getUserPassword())));
+        updateWrapper.set(User::getPassword, modifyUserPasswordRequest.getUserPassword());
 
         if (!this.update(updateWrapper)) {
             throw new BusinessException("修改用户密码失败");

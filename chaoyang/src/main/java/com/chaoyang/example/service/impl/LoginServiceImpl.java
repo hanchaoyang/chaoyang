@@ -82,7 +82,7 @@ public class LoginServiceImpl implements LoginService {
 //            throw new BusinessException("验证码错误");
 //        }
 
-        User user = this.userService.findByPhoneAndPassword(loginRequest.getUserPhone(), DigestUtil.md5Hex(DigestUtil.md5Hex(loginRequest.getUserPassword())));
+        User user = this.userService.findByPhoneAndPassword(loginRequest.getUserPhone(), loginRequest.getUserPassword());
 
         if (Objects.isNull(user)) {
             throw new AuthException("用户名或密码错误");
