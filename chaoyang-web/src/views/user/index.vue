@@ -22,19 +22,21 @@
         </template>
       </el-table-column>
 <!--      <el-table-column prop="userStatusName" label="用户状态" min-width="100"></el-table-column>-->
-      <el-table-column fixed="right" label="操作" width="380">
+      <el-table-column fixed="right" label="操作" width="490">
         <template slot-scope="scope">
           <el-button type="primary" size="medium" @click="openModifyDialog(scope.row)">编辑</el-button>
-          <el-button v-if="scope.row.userStatus === 0" type="success" size="medium" @click="openModifyDialog(scope.row)">启用</el-button>
-          <el-button v-else-if="scope.row.userStatus === 1" type="warning" size="medium" @click="openModifyDialog(scope.row)">禁用</el-button>
+          <el-button v-if="scope.row.userStatus === 0" type="success" size="medium" @click="enable(scope.row)">启用</el-button>
+          <el-button v-else-if="scope.row.userStatus === 1" type="warning" size="medium" @click="disable(scope.row)">禁用</el-button>
+          <el-button type="primary" size="medium" @click="openModifyPasswordDialog(scope.row)">修改密码</el-button>
           <el-button type="success" size="medium" @click="openUserRoleDialog(scope.row)">角色</el-button>
           <el-button type="danger" size="medium" @click="remove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <el-pagination layout="prev, pager, next" :current-page.sync="page.current" :page-size="page.size" :total="page.total" background style="margin-top: 20px;" @current-change="currentChange()"></el-pagination>
-    <modify-dialog ref="ModifyDialog" :user-id="dialog.modify.userId" @close="getPage()"></modify-dialog>
     <create-dialog ref="CreateDialog" @close="getPage()"></create-dialog>
+    <modify-dialog ref="ModifyDialog" :user-id="dialog.modify.userId" @close="getPage()"></modify-dialog>
+    <modify-password-dialog ref="ModifyPasswordDialog" :user-id="dialog.modifyPassword.userId"></modify-password-dialog>
     <user-role-dialog ref="UserRoleDialog" :user-id="dialog.userRole.userId"></user-role-dialog>
   </div>
 </template>
@@ -42,14 +44,16 @@
 <script>
 import CreateDialog from '@/components/User/CreateDialog'
 import ModifyDialog from '@/components/User/ModifyDialog'
+import ModifyPasswordDialog from '@/components/User/ModifyPasswordDialog'
 import UserRoleDialog from '@/components/User/UserRoleDialog'
-import {findPage, remove} from '@/api/user'
+import { findPage, modifyStatus, remove } from '@/api/user'
 
 export default {
   name: "index",
   components: {
     CreateDialog,
     ModifyDialog,
+    ModifyPasswordDialog,
     UserRoleDialog
   },
   data() {
@@ -71,6 +75,9 @@ export default {
           userId: null
         },
         modify: {
+          userId: null
+        },
+        modifyPassword: {
           userId: null
         }
       }
@@ -126,9 +133,45 @@ export default {
       this.dialog.modify.userId = user.userId
       this.$refs.ModifyDialog.setVisible(true)
     },
+    openModifyPasswordDialog: function(user) {
+      this.dialog.modifyPassword.userId = user.userId
+      this.$refs.ModifyPasswordDialog.setVisible(true)
+    },
     openUserRoleDialog: function (user) {
       this.dialog.userRole.userId = user.userId
       this.$refs.UserRoleDialog.setVisible(true);
+    },
+    enable: function(user) {
+      const data = {
+        userId: user.userId,
+        userStatus: 1
+      }
+      modifyStatus(data).then(result => {
+        const {code, message} = result
+        if (code === 200) {
+          this.$message({
+            message: message,
+            type: 'success'
+          })
+          this.getPage()
+        }
+      })
+    },
+    disable: function(user) {
+      const data = {
+        userId: user.userId,
+        userStatus: 0
+      }
+      modifyStatus(data).then(result => {
+        const {code, message} = result
+        if (code === 200) {
+          this.$message({
+            message: message,
+            type: 'success'
+          })
+          this.getPage()
+        }
+      })
     },
     remove: function (user) {
       this.$confirm('确认删除？', '提示', {

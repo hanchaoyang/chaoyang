@@ -32,6 +32,22 @@ export function modify(data) {
   })
 }
 
+export function modifyStatus(data) {
+  return request({
+    url: '/user/status',
+    method: 'patch',
+    data
+  })
+}
+
+export function modifyPassword(data) {
+  return request({
+    url: '/user/password',
+    method: 'patch',
+    data
+  })
+}
+
 export function remove(params) {
   return request({
     url: '/user',

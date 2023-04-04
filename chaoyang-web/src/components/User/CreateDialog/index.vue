@@ -1,11 +1,23 @@
 <template>
   <el-dialog title="添加" :visible.sync="visible" width="40%" @open="open()" @close="close()">
     <el-form ref="CreateDialogForm" :model="user" :rules="rules" size="medium" label-width="100px">
-      <el-form-item label="用户名称" prop="userName">
-        <el-input v-model="user.userName" style="width: 320px"></el-input>
+      <el-form-item label="用户昵称" prop="userNickname">
+        <el-input v-model="user.userNickname" style="width: 320px"></el-input>
       </el-form-item>
-      <el-form-item label="用户标识" prop="userCode">
-        <el-input v-model="user.userCode" style="width: 320px"></el-input>
+      <el-form-item label="用户手机号" prop="userPhone">
+        <el-input v-model="user.userPhone" style="width: 320px"></el-input>
+      </el-form-item>
+      <el-form-item label="用户密码" prop="userPassword">
+        <el-input v-model="user.userPassword" show-password style="width: 320px"></el-input>
+      </el-form-item>
+      <el-form-item label="用户密码" prop="confirmPassword">
+        <el-input v-model="user.confirmPassword" show-password style="width: 320px"></el-input>
+      </el-form-item>
+      <el-form-item label="用户状态" prop="userStatus">
+        <el-radio-group v-model="user.userStatus">
+          <el-radio label="0">禁用</el-radio>
+          <el-radio label="1">启用</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="create()">保存</el-button>
@@ -28,17 +40,31 @@ export default {
     return {
       visible: false,
       user: {
-        userName: null,
-        userCode: null
+        userNickname: null,
+        userPhone: null,
+        userPassword: null,
+        confirmPassword: null,
+        userStatus: null
       },
       rules: {
-        userName: [
-          { required: true, message: '请输入用户名称', trigger: 'blur' },
-          { min: 1, max: 20, message: '用户名称长度为1-20个字符', trigger: 'blur' }
+        userNickname: [
+          { required: true, message: '请输入用户昵称', trigger: 'blur' },
+          { min: 1, max: 20, message: '用户昵称长度为1-20个字符', trigger: 'blur' }
         ],
-        userCode: [
-          { required: true, message: '请输入用户标识', trigger: 'blur' },
-          { min: 1, max: 40, message: '用户标识长度为1-40个字符', trigger: 'blur' }
+        userPhone: [
+          { required: true, message: '请输入用户手机号', trigger: 'blur' },
+          { min: 11, max: 11, message: '用户昵称长度为11个字符', trigger: 'blur' }
+        ],
+        userPassword: [
+          { required: true, message: '请输入用户密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '用户昵称长度为6-20个字符', trigger: 'blur' }
+        ],
+        confirmPassword: [
+          { required: true, message: '请输入确认密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '确认密码长度为6-20个字符', trigger: 'blur' }
+        ],
+        userStatus: [
+          { required: true, message: '请选择用户状态', trigger: 'blur' }
         ]
       }
     }
@@ -51,16 +77,28 @@ export default {
 
     },
     close: function () {
-      this.user.userName = null
-      this.user.userCode = null
+      this.user.userNickname = null
+      this.user.userPhone = null
+      this.user.userPassword = null
+      this.user.confirmPassword = null
+      this.user.userStatus = null
       this.$refs.CreateDialogForm.resetFields();
     },
     create: function () {
       this.$refs.CreateDialogForm.validate(valid => {
         if (valid) {
+          if (this.user.userPassword !== this.user.confirmPassword) {
+            this.$message({
+              message: "两次密码输入不一致",
+              type: 'error'
+            })
+            return
+          }
           const data = {
-            userName: this.user.userName,
-            userCode: this.user.userCode
+            userNickname: this.user.userNickname,
+            userPhone: this.user.userPhone,
+            userPassword: this.user.userPassword,
+            userStatus: this.user.userStatus
           }
           create(data).then(result => {
             const {code, message} = result
