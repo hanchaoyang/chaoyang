@@ -13,7 +13,6 @@ import com.chaoyang.example.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -151,7 +150,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void remove(RemoveRoleRequest removeRoleRequest) {
         if (this.notExistsById(removeRoleRequest.getRoleId())) {
             throw new BusinessException("该角色不存在");

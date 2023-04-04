@@ -16,7 +16,6 @@ import com.chaoyang.example.service.RolePermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -190,7 +189,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void remove(RemovePermissionRequest removePermissionRequest) {
         if (this.notExistsById(removePermissionRequest.getPermissionId())) {
             throw new BusinessException("该权限不存在");
