@@ -20,7 +20,6 @@ import com.chaoyang.example.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -141,7 +140,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setNickname(createUserRequest.getUserNickname());
         user.setPhone(createUserRequest.getUserPhone());
         user.setPassword(DigestUtil.md5Hex(DigestUtil.md5Hex(createUserRequest.getUserPassword())));
-        user.setStatus(UserStatusConstant.ENABLE);
+        user.setStatus(createUserRequest.getUserStatus());
 
         if (!this.save(user)) {
             throw new BusinessException("添加用户失败");
@@ -170,6 +169,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void modifyStatus(ModifyUserStatusRequest modifyUserStatusRequest) {
         if (!Objects.equals(modifyUserStatusRequest.getUserStatus(), UserStatusConstant.DISABLE) && !Objects.equals(modifyUserStatusRequest.getUserStatus(), UserStatusConstant.ENABLE)) {
             throw new BusinessException("用户状态参数错误");
+        }
+
+        if (Objects.equals(modifyUserStatusRequest.getUserId(), 1L) && Objects.equals(modifyUserStatusRequest.getUserStatus(), UserStatusConstant.DISABLE)) {
+            throw new BusinessException("该用户不能被禁用");
         }
 
         if (this.notExistsById(modifyUserStatusRequest.getUserId())) {
@@ -203,8 +206,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void remove(RemoveUserRequest removeUserRequest) {
+        if (Objects.equals(removeUserRequest.getUserId(), 1L)) {
+            throw new BusinessException("该用户不能被删除");
+        }
+
         if (this.notExistsById(removeUserRequest.getUserId())) {
             throw new BusinessException("该用户不存在");
         }

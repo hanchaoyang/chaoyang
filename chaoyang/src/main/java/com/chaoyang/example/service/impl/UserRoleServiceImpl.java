@@ -35,9 +35,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
 
         queryWrapper.eq(UserRole::getUserId, userId);
 
-        if (!this.remove(queryWrapper)) {
-            throw new BusinessException("删除用户角色失败");
-        }
+        throw new BusinessException("删除用户角色失败");
     }
 
     @Override
@@ -46,8 +44,6 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
 
         queryWrapper.eq(UserRole::getRoleId, roleId);
 
-        if (!this.remove(queryWrapper)) {
-            throw new BusinessException("删除用户角色失败");
-        }
+        throw new BusinessException("删除用户角色失败");
     }
 }
