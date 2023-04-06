@@ -3,6 +3,7 @@ package com.chaoyang.example.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chaoyang.example.entity.dto.request.*;
+import com.chaoyang.example.entity.dto.response.PermissionResponse;
 import com.chaoyang.example.entity.dto.response.RoleResponse;
 import com.chaoyang.example.entity.po.Role;
 
@@ -45,6 +46,11 @@ public interface RoleService extends IService<Role> {
      * 根据条件分页查询角色
      */
     Page<RoleResponse> findPage(FindRolePageRequest findRolePageRequest);
+
+    /**
+     * 根据角色主键分页查询未关联的权限
+     */
+    Page<RoleResponse> findInactivePage(FindInactiveRolePageRequest findInactiveRolePageRequest);
 
     /**
      * 添加角色

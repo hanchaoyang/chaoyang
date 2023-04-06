@@ -113,6 +113,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
+    public Page<RoleResponse> findInactivePage(FindInactiveRolePageRequest findInactiveRolePageRequest) {
+        return null;
+    }
+
+    @Override
     public void create(CreateRoleRequest createRoleRequest) {
         if (this.existsByNameOrCode(createRoleRequest.getRoleName(), createRoleRequest.getRoleCode(), null)) {
             throw new BusinessException("该角色名称或标识已存在");
