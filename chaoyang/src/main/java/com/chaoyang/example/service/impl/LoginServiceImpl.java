@@ -85,7 +85,7 @@ public class LoginServiceImpl implements LoginService {
         User user = this.userService.findByPhoneAndPassword(loginRequest.getUserPhone(), loginRequest.getUserPassword());
 
         if (Objects.isNull(user)) {
-            throw new AuthException("用户名或密码错误");
+            throw new AuthException("用户不存在或密码错误");
         }
 
         if (Objects.equals(user.getStatus(), UserStatusConstant.DISABLE)) {
