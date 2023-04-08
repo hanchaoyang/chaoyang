@@ -64,7 +64,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
 
         queryWrapper.eq(User::getPhone, phone);
-        queryWrapper.eq(User::getPassword, password);
+        queryWrapper.eq(User::getPassword, DigestUtil.sha256Hex(DigestUtil.sha256Hex(password)));
 
         return this.getOne(queryWrapper);
     }
@@ -139,7 +139,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         user.setNickname(createUserRequest.getUserNickname());
         user.setPhone(createUserRequest.getUserPhone());
-        user.setPassword(createUserRequest.getUserPassword());
+        user.setPassword(DigestUtil.sha256Hex(DigestUtil.sha256Hex(createUserRequest.getUserPassword())));
         user.setStatus(createUserRequest.getUserStatus());
 
         if (!this.save(user)) {
@@ -198,7 +198,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
 
         updateWrapper.eq(User::getId, modifyUserPasswordRequest.getUserId());
-        updateWrapper.set(User::getPassword, modifyUserPasswordRequest.getUserPassword());
+        updateWrapper.set(User::getPassword, DigestUtil.sha256Hex(DigestUtil.sha256Hex(modifyUserPasswordRequest.getUserPassword())));
 
         if (!this.update(updateWrapper)) {
             throw new BusinessException("修改用户密码失败");
