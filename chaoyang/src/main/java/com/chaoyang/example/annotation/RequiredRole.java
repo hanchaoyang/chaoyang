@@ -1,8 +1,5 @@
 package com.chaoyang.example.annotation;
 
-import com.chaoyang.example.constant.LogicEnum;
-import org.springframework.core.annotation.AliasFor;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,12 +15,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequiredRole {
 
-    @AliasFor("roles")
-    String[] value() default {};
-
-    @AliasFor("value")
     String[] roles() default {};
 
-    LogicEnum logic() default LogicEnum.AND;
+    boolean and() default false;
 
 }

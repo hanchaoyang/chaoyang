@@ -1,7 +1,5 @@
 package com.chaoyang.example.annotation;
 
-import com.chaoyang.example.constant.LogicEnum;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,6 +17,6 @@ public @interface RequiredPermission {
 
     String[] permissions() default {};
 
-    LogicEnum logic() default LogicEnum.AND;
+    boolean and() default false;
 
 }

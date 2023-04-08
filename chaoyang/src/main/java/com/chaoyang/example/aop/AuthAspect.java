@@ -3,7 +3,6 @@ package com.chaoyang.example.aop;
 import com.alibaba.fastjson2.JSONObject;
 import com.chaoyang.example.annotation.RequiredPermission;
 import com.chaoyang.example.annotation.RequiredRole;
-import com.chaoyang.example.constant.LogicEnum;
 import com.chaoyang.example.entity.dto.LoginInfo;
 import com.chaoyang.example.exception.AuthException;
 import lombok.RequiredArgsConstructor;
@@ -131,7 +130,7 @@ public class AuthAspect {
     private void authRole(RequiredRole requiredRole, Collection<String> userRoles) {
         Set<String> requiredRoles = Arrays.stream(requiredRole.roles()).collect(Collectors.toSet());
 
-        if (Objects.equals(requiredRole.logic(), LogicEnum.AND)) {
+        if (requiredRole.and()) {
             if (!userRoles.containsAll(requiredRoles)) {
                 throw new AuthException("无权限");
             }
@@ -145,7 +144,7 @@ public class AuthAspect {
     private void authPermission(RequiredPermission requiredPermission, Collection<String> userPermissions) {
         Set<String> requiredPermissions = Arrays.stream(requiredPermission.permissions()).collect(Collectors.toSet());
 
-        if (Objects.equals(requiredPermission.logic(), LogicEnum.AND)) {
+        if (requiredPermission.and()) {
             if (!userPermissions.containsAll(requiredPermissions)) {
                 throw new AuthException("无权限");
             }
