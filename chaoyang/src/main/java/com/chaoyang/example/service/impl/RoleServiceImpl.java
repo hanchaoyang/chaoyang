@@ -53,6 +53,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             nestedQueryWrapper.or();
             nestedQueryWrapper.eq(Role::getCode, code);
         });
+
         queryWrapper.ne(Objects.nonNull(excludeId), Role::getId, excludeId);
 
         return this.count(queryWrapper) != 0;
