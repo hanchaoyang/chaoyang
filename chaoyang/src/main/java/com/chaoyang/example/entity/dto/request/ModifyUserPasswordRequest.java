@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * 修改用户状态请求类
+ * 修改用户密码请求类
  *
  * @author 韩朝阳
  * @since 2023/3/19
