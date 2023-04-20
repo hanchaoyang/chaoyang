@@ -26,7 +26,7 @@ public class ModifyUserPasswordRequest {
      * 用户密码
      */
     @NotBlank(message = "用户密码不能为空")
-    @Length(min = 6, max = 20)
+    @Length(min = 6, max = 20, message = "用户密码长度为6-20个字符")
     private String userPassword;
 
 }
