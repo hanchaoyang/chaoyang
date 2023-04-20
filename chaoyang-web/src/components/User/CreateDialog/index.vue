@@ -10,7 +10,7 @@
       <el-form-item label="用户密码" prop="userPassword">
         <el-input v-model="user.userPassword" show-password style="width: 320px"></el-input>
       </el-form-item>
-      <el-form-item label="用户密码" prop="confirmPassword">
+      <el-form-item label="确认密码" prop="confirmPassword">
         <el-input v-model="user.confirmPassword" show-password style="width: 320px"></el-input>
       </el-form-item>
       <el-form-item label="用户状态" prop="userStatus">

@@ -23,7 +23,7 @@
 <!--      </el-table-column>-->
       <el-table-column prop="userStatus" label="用户状态" min-width="100">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.userStatus" active-text="启用" inactive-text="禁用" :active-value="1" :inactive-value="0" active-color="#13CE66" inactive-color="#FF4949"></el-switch>
+          <el-switch v-model="scope.row.userStatus" active-text="启用" inactive-text="禁用" :active-value="1" :inactive-value="0" active-color="#13CE66" inactive-color="#FF4949" @change="userStatus => modifyStatus(scope.row.userId, userStatus)"></el-switch>
         </template>
       </el-table-column>
 <!--      <el-table-column prop="userStatusName" label="用户状态" min-width="100"></el-table-column>-->
@@ -146,10 +146,10 @@ export default {
       this.dialog.userRole.userId = user.userId
       this.$refs.UserRoleDialog.setVisible(true);
     },
-    enable: function(user) {
+    modifyStatus: function(userId, userStatus) {
       const data = {
-        userId: user.userId,
-        userStatus: 1
+        userId: userId,
+        userStatus:userStatus
       }
       modifyStatus(data).then(result => {
         const {code, message} = result
@@ -160,22 +160,8 @@ export default {
           })
           this.getPage()
         }
-      })
-    },
-    disable: function(user) {
-      const data = {
-        userId: user.userId,
-        userStatus: 0
-      }
-      modifyStatus(data).then(result => {
-        const {code, message} = result
-        if (code === 200) {
-          this.$message({
-            message: message,
-            type: 'success'
-          })
-          this.getPage()
-        }
+      }).catch(() => {
+        this.getPage()
       })
     },
     remove: function (user) {
