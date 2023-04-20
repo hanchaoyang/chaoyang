@@ -1,6 +1,11 @@
 package com.chaoyang.example.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.chaoyang.example.entity.dto.request.FindRolePermissionPageRequest;
+import com.chaoyang.example.entity.dto.request.FindUserRolePageRequest;
+import com.chaoyang.example.entity.dto.response.RolePermissionResponse;
+import com.chaoyang.example.entity.dto.response.UserRoleResponse;
 import com.chaoyang.example.entity.po.Role;
 import com.chaoyang.example.entity.po.UserRole;
 
@@ -19,6 +24,11 @@ public interface UserRoleService extends IService<UserRole> {
      * 根据用户主键查询角色
      */
     List<UserRole> findByUserId(Long userId);
+
+    /**
+     * 根据用户主键分页查询用户角色
+     */
+    Page<UserRoleResponse> findPage(FindUserRolePageRequest findUserRolePageRequest);
 
     void removeByUserId(Long userId);
 
