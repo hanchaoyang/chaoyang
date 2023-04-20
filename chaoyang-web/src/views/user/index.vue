@@ -16,19 +16,24 @@
       <el-table-column type="index" width="100" label="#"></el-table-column>
       <el-table-column prop="userNickname" label="用户昵称" min-width="100"></el-table-column>
       <el-table-column prop="userPhone" label="用户手机号" min-width="100"></el-table-column>
+<!--      <el-table-column prop="userStatus" label="用户状态" min-width="100">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-tag :type="userStatusTagType(scope.row)">{{scope.row.userStatusName}}</el-tag>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column prop="userStatus" label="用户状态" min-width="100">
         <template slot-scope="scope">
-          <el-tag :type="userStatusTagType(scope.row)">{{scope.row.userStatusName}}</el-tag>
+          <el-switch v-model="scope.row.userStatus" active-text="启用" inactive-text="禁用" :active-value="1" :inactive-value="0" active-color="#13CE66" inactive-color="#FF4949"></el-switch>
         </template>
       </el-table-column>
 <!--      <el-table-column prop="userStatusName" label="用户状态" min-width="100"></el-table-column>-->
-      <el-table-column fixed="right" label="操作" width="490">
+      <el-table-column fixed="right" label="操作" width="400">
         <template slot-scope="scope">
           <el-button type="primary" size="medium" @click="openModifyDialog(scope.row)">编辑</el-button>
-          <el-button v-if="scope.row.userStatus === 0" type="success" size="medium" @click="enable(scope.row)">启用</el-button>
-          <el-button v-else-if="scope.row.userStatus === 1" type="warning" size="medium" @click="disable(scope.row)">禁用</el-button>
-          <el-button type="primary" size="medium" @click="openModifyPasswordDialog(scope.row)">修改密码</el-button>
+<!--          <el-button v-if="scope.row.userStatus === 0" type="success" size="medium" @click="enable(scope.row)">启用</el-button>-->
+<!--          <el-button v-else-if="scope.row.userStatus === 1" type="warning" size="medium" @click="disable(scope.row)">禁用</el-button>-->
           <el-button type="success" size="medium" @click="openUserRoleDialog(scope.row)">角色</el-button>
+          <el-button type="primary" size="medium" @click="openModifyPasswordDialog(scope.row)">修改密码</el-button>
           <el-button type="danger" size="medium" @click="remove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
