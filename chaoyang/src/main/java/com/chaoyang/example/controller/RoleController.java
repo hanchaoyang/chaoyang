@@ -3,6 +3,7 @@ package com.chaoyang.example.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.*;
+import com.chaoyang.example.entity.dto.response.PermissionResponse;
 import com.chaoyang.example.entity.dto.response.RoleResponse;
 import com.chaoyang.example.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,13 @@ public class RoleController {
         Page<RoleResponse> roleResponsePage = this.roleService.findPage(findRolePageRequest);
 
         return Result.success(roleResponsePage);
+    }
+
+    @GetMapping("/role/inactive/page")
+    public Result<Page<RoleResponse>> findInactivePage(FindInactiveRolePageRequest findInactiveRolePageRequest) {
+        Page<RoleResponse> inactiveRolePage = this.roleService.findInactivePage(findInactiveRolePageRequest);
+
+        return Result.success(inactiveRolePage);
     }
 
     @PostMapping("/role")

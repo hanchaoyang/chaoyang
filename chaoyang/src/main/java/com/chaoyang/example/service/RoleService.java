@@ -48,7 +48,7 @@ public interface RoleService extends IService<Role> {
     Page<RoleResponse> findPage(FindRolePageRequest findRolePageRequest);
 
     /**
-     * 根据角色主键分页查询未关联的权限
+     * 根据用户主键分页查询未关联的角色
      */
     Page<RoleResponse> findInactivePage(FindInactiveRolePageRequest findInactiveRolePageRequest);
 

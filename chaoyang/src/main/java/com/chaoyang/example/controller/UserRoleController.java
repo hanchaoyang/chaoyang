@@ -2,10 +2,7 @@ package com.chaoyang.example.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoyang.example.entity.dto.Result;
-import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
-import com.chaoyang.example.entity.dto.request.FindRolePermissionPageRequest;
-import com.chaoyang.example.entity.dto.request.FindUserRolePageRequest;
-import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
+import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.RolePermissionResponse;
 import com.chaoyang.example.entity.dto.response.UserRoleResponse;
 import com.chaoyang.example.entity.po.UserRole;
@@ -33,6 +30,13 @@ public class UserRoleController {
         Page<UserRoleResponse> userRoleResponsePage = this.userRoleService.findPage(findUserRolePageRequest);
 
         return Result.success(userRoleResponsePage);
+    }
+
+    @DeleteMapping("/user-role")
+    public Result<Void> remove(RemoveUserRoleRequest removeUserRoleRequest) {
+        this.userRoleService.remove(removeUserRoleRequest);
+
+        return Result.success();
     }
 
 }

@@ -4,12 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.*;
+import com.chaoyang.example.entity.dto.response.PermissionResponse;
 import com.chaoyang.example.entity.dto.response.RoleResponse;
+import com.chaoyang.example.entity.po.Permission;
 import com.chaoyang.example.entity.po.Role;
+import com.chaoyang.example.entity.po.RolePermission;
+import com.chaoyang.example.entity.po.UserRole;
 import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.RoleMapper;
 import com.chaoyang.example.service.RolePermissionService;
 import com.chaoyang.example.service.RoleService;
+import com.chaoyang.example.service.UserRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -29,6 +34,8 @@ import java.util.stream.Collectors;
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
 
     private final RolePermissionService rolePermissionService;
+
+    private final UserRoleService userRoleService;
 
     @Override
     public boolean existsById(Long id) {
@@ -115,7 +122,33 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     @Override
     public Page<RoleResponse> findInactivePage(FindInactiveRolePageRequest findInactiveRolePageRequest) {
-        return null;
+        List<UserRole> userRoles = this.userRoleService.findByUserId(findInactiveRolePageRequest.getUserId());
+
+        List<Long> excludedIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList());
+
+        Page<Role> rolePage = new Page<>(findInactiveRolePageRequest.getCurrent(), findInactiveRolePageRequest.getSize());
+
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.notIn(!excludedIds.isEmpty(), Role::getId, excludedIds);
+
+        this.page(rolePage, queryWrapper);
+
+        Page<RoleResponse> inactiveRoleResponsePage = new Page<>();
+
+        BeanUtils.copyProperties(rolePage, inactiveRoleResponsePage, "records");
+
+        inactiveRoleResponsePage.setRecords(rolePage.getRecords().stream().map(role -> {
+            RoleResponse roleResponse = new RoleResponse();
+
+            roleResponse.setRoleId(role.getId());
+            roleResponse.setRoleName(role.getName());
+            roleResponse.setRoleCode(role.getCode());
+
+            return roleResponse;
+        }).collect(Collectors.toList()));
+
+        return inactiveRoleResponsePage;
     }
 
     @Override

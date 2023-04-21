@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.entity.dto.request.FindUserRolePageRequest;
+import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
+import com.chaoyang.example.entity.dto.request.RemoveUserRoleRequest;
 import com.chaoyang.example.entity.dto.response.RolePermissionResponse;
 import com.chaoyang.example.entity.dto.response.UserRoleResponse;
 import com.chaoyang.example.entity.po.Permission;
@@ -14,8 +16,10 @@ import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.UserRoleMapper;
 import com.chaoyang.example.service.RoleService;
 import com.chaoyang.example.service.UserRoleService;
+import com.chaoyang.example.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,10 +33,31 @@ import java.util.stream.Collectors;
  * @since 2023/3/19
  */
 @Service
-@RequiredArgsConstructor
 public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> implements UserRoleService {
 
+    private final UserService userService;
+
     private final RoleService roleService;
+
+    @Lazy
+    public UserRoleServiceImpl(UserService userService, RoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        LambdaQueryWrapper<UserRole> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(UserRole::getId, id);
+
+        return this.count(queryWrapper) != 0;
+    }
+
+    @Override
+    public boolean notExistsById(Long id) {
+        return !this.existsById(id);
+    }
 
     @Override
     public List<UserRole> findByUserId(Long userId) {
@@ -88,6 +113,17 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
         }).collect(Collectors.toList()));
 
         return userRoleResponsePage;
+    }
+
+    @Override
+    public void remove(RemoveUserRoleRequest removeUserRoleRequest) {
+        if (this.notExistsById(removeUserRoleRequest.getUserRoleId())) {
+            throw new BusinessException("该用户角色不存在");
+        }
+
+        if (!this.removeById(removeUserRoleRequest.getUserRoleId())) {
+            throw new BusinessException("删除用户角色失败");
+        }
     }
 
     @Override
