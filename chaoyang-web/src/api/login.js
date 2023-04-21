@@ -2,6 +2,13 @@ import request from '@/utils/request'
 
 // TODO 改这里
 
+export function captcha() {
+  return request({
+    url: '/captcha',
+    method: 'get'
+  })
+}
+
 export function login(data) {
   return request({
     url: '/login',

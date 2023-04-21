@@ -33,7 +33,7 @@ import Layout from '@/layout'
 export const constantRoutes = [
   {
     path: '/login',
-    component: () => import('@/views/login/index'),
+    component: () => import('@/views/login2/index'),
     hidden: true
   },
 
@@ -102,7 +102,7 @@ export const constantRoutes = [
   //     {
   //       path: 'index',
   //       name: 'Form',
-  //       component: () => import('@/views/form/index'),
+  //       component: () => import('@/views/login2/index'),
   //       meta: { title: 'Form', icon: 'form' }
   //     }
   //   ]

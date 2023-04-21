@@ -47,3 +47,36 @@
 .el-range-separator {
   box-sizing: content-box;
 }
+
+.el-table__fixed-right {
+  height: 100% !important;
+}
+
+.el-message-box {
+  padding-bottom: 0;
+}
+
+.el-message-box__header {
+  padding: 20px 20px 20px;
+}
+
+.el-message-box__content {
+  padding: 10px 20px;
+}
+
+.el-message-box__btns {
+  padding: 10px 20px 20px;
+}
+
+.el-message-box__btns button {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+.el-image {
+  display: block;
+}
+
+.el-image__inner {
+  display: block;
+}
