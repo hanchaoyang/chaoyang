@@ -1,6 +1,6 @@
 package com.chaoyang.example.service;
 
-import com.chaoyang.example.entity.dto.request.GetQrCodeRequest;
+import com.chaoyang.example.entity.dto.request.GetCaptchaRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
 import com.chaoyang.example.entity.dto.response.LoginInfoResponse;
 import com.chaoyang.example.entity.dto.response.LoginResponse;
@@ -18,7 +18,7 @@ public interface LoginService {
     /**
      * 获取验证码
      */
-    void getQrCode(GetQrCodeRequest getQrCodeRequest, HttpServletResponse httpServletResponse);
+    void getCaptcha(GetCaptchaRequest getCaptchaRequest, HttpServletResponse httpServletResponse);
 
     /**
      * 登录

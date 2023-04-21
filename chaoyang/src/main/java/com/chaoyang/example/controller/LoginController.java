@@ -1,7 +1,7 @@
 package com.chaoyang.example.controller;
 
 import com.chaoyang.example.entity.dto.Result;
-import com.chaoyang.example.entity.dto.request.GetQrCodeRequest;
+import com.chaoyang.example.entity.dto.request.GetCaptchaRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
 import com.chaoyang.example.entity.dto.response.LoginInfoResponse;
 import com.chaoyang.example.entity.dto.response.LoginResponse;
@@ -23,9 +23,9 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @GetMapping("/qrcode")
-    public Result<Void> getQrCode(GetQrCodeRequest getQrCodeRequest, HttpServletResponse httpServletResponse) {
-        this.loginService.getQrCode(getQrCodeRequest, httpServletResponse);
+    @GetMapping("/captcha")
+    public Result<Void> getCaptcha(GetCaptchaRequest getCaptchaRequest, HttpServletResponse httpServletResponse) {
+        this.loginService.getCaptcha(getCaptchaRequest, httpServletResponse);
 
         return Result.success();
     }

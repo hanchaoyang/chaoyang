@@ -1,16 +1,14 @@
 package com.chaoyang.example.service.impl;
 
-import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.chaoyang.example.constant.UserStatusConstant;
 import com.chaoyang.example.entity.dto.LoginInfo;
-import com.chaoyang.example.entity.dto.request.GetQrCodeRequest;
+import com.chaoyang.example.entity.dto.request.GetCaptchaRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
 import com.chaoyang.example.entity.dto.response.LoginInfoResponse;
 import com.chaoyang.example.entity.dto.response.LoginResponse;
 import com.chaoyang.example.entity.po.*;
 import com.chaoyang.example.exception.AuthException;
-import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.exception.ParameterException;
 import com.chaoyang.example.service.*;
 import com.wf.captcha.ArithmeticCaptcha;
@@ -53,12 +51,12 @@ public class LoginServiceImpl implements LoginService {
     private final PermissionService permissionService;
 
     @Override
-    public void getQrCode(GetQrCodeRequest getQrCodeRequest, HttpServletResponse httpServletResponse) {
-        ArithmeticCaptcha captcha = new ArithmeticCaptcha(120, 40, 2);
+    public void getCaptcha(GetCaptchaRequest getCaptchaRequest, HttpServletResponse httpServletResponse) {
+        ArithmeticCaptcha captcha = new ArithmeticCaptcha(120, 36, 2);
 
-        String qrcode = captcha.text();
+        String captchaText = captcha.text();
 
-        this.redisTemplate.opsForValue().set(String.format("chaoyang:qrcode:%s", getQrCodeRequest.getNonce()), qrcode, Duration.ofMinutes(1L));
+        this.redisTemplate.opsForValue().set(String.format("chaoyang:captcha:%s", getCaptchaRequest.getNonce()), captchaText, Duration.ofMinutes(1L));
 
         try {
             captcha.out(httpServletResponse.getOutputStream());

@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
  * @since 2023/3/19
  */
 @Data
-public class GetQrCodeRequest {
+public class GetCaptchaRequest {
 
     /**
      * 临时字符串

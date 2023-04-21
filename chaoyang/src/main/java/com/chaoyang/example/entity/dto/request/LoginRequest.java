@@ -40,6 +40,6 @@ public class LoginRequest {
      */
 //    @NotBlank(message = "验证码不能为空")
 //    @Length(min = 4, max = 4, message = "验证码长度为4个字符")
-    private String qrcode;
+    private String captcha;
 
 }
