@@ -16,6 +16,14 @@ export function findPage(params) {
   })
 }
 
+export function findInactiveRolePage(params) {
+  return request({
+    url: '/role/inactive/page',
+    method: 'get',
+    params
+  })
+}
+
 export function create(data) {
   return request({
     url: '/role',

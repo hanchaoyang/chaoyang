@@ -1,9 +1,9 @@
 <template>
   <el-dialog title="添加" :visible.sync="visible" width="50%" append-to-body @open="open()" @close="close()">
-    <el-table :data="permissions" size="medium" empty-text="暂无数据" border stripe style="margin-top: 20px">
+    <el-table :data="roles" size="medium" empty-text="暂无数据" border stripe style="margin-top: 20px">
       <el-table-column type="index" width="100" label="#"></el-table-column>
-      <el-table-column prop="permissionName" label="名称" min-width="100"></el-table-column>
-      <el-table-column prop="permissionCode" label="标识" min-width="100"></el-table-column>
+      <el-table-column prop="roleName" label="名称" min-width="100"></el-table-column>
+      <el-table-column prop="roleCode" label="标识" min-width="100"></el-table-column>
       <el-table-column fixed="right" label="操作" width="120">
         <template slot-scope="scope">
           <el-button type="success" size="medium" @click="create(scope.row)">添加</el-button>
@@ -19,20 +19,20 @@
 </template>
 
 <script>
-import {findInactivePermissionPage} from "@/api/permission"
-import {create} from "@/api/role-permission"
+import {findInactiveRolePage} from "@/api/role"
+import {create} from "@/api/user-role"
 
 export default {
   name: "index",
   props: {
-    roleId: {
+    userId: {
       type: Number
     }
   },
   data() {
     return {
       visible: false,
-      permissions: [],
+      roles: [],
       page: {
         current: 1,
         size: 4,
@@ -49,7 +49,7 @@ export default {
       this.getPage()
     },
     close: function () {
-      this.permissions = []
+      this.roles = []
       this.page.current = 1
       this.page.size = 4
       this.page.total = 0
@@ -61,24 +61,24 @@ export default {
     },
     getPage: function () {
       const params = {
-        roleId: this.roleId,
+        userId: this.userId,
         current: this.page.current,
         size: this.page.size
       }
-      findInactivePermissionPage(params).then(result => {
+      findInactiveRolePage(params).then(result => {
         const {data} = result
-        const {current, size, total, pages, records: permissions} = data
+        const {current, size, total, pages, records: roles} = data
         this.page.current = current
         this.page.size = size
         this.page.total = total
         this.page.pages = pages
-        this.permissions = permissions
+        this.roles = roles
       })
     },
-    create: function (permission) {
+    create: function (role) {
       const data = {
-        roleId: this.roleId,
-        permissionId: permission.permissionId
+        userId: this.userId,
+        roleId: role.roleId
       }
       create(data).then(result => {
         const {code, message} = result
@@ -87,7 +87,7 @@ export default {
             message: message,
             type: 'success'
           })
-          if (this.permissions.length === 1 && this.page.current > 1) {
+          if (this.roles.length === 1 && this.page.current > 1) {
             this.page.current -= 1
           }
           this.getPage()
