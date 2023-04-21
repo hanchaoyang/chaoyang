@@ -2,10 +2,7 @@ package com.chaoyang.example.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.chaoyang.example.entity.dto.request.FindRolePermissionPageRequest;
-import com.chaoyang.example.entity.dto.request.FindUserRolePageRequest;
-import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
-import com.chaoyang.example.entity.dto.request.RemoveUserRoleRequest;
+import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.RolePermissionResponse;
 import com.chaoyang.example.entity.dto.response.UserRoleResponse;
 import com.chaoyang.example.entity.po.Role;
@@ -21,6 +18,8 @@ import java.util.Set;
  * @since 2023/3/19
  */
 public interface UserRoleService extends IService<UserRole> {
+
+    boolean existsByUserIdAndRoleId(Long userId, Long roleId);
 
     /**
      * 根据主键查询用户角色是否存在
@@ -41,6 +40,11 @@ public interface UserRoleService extends IService<UserRole> {
      * 根据用户主键分页查询用户角色
      */
     Page<UserRoleResponse> findPage(FindUserRolePageRequest findUserRolePageRequest);
+
+    /**
+     * 添加用户角色
+     */
+    void create(CreateUserRoleRequest createUserRoleRequest);
 
     /**
      * 删除用户角色

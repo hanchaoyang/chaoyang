@@ -3,9 +3,7 @@ package com.chaoyang.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.chaoyang.example.entity.dto.request.FindUserRolePageRequest;
-import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
-import com.chaoyang.example.entity.dto.request.RemoveUserRoleRequest;
+import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.RolePermissionResponse;
 import com.chaoyang.example.entity.dto.response.UserRoleResponse;
 import com.chaoyang.example.entity.po.Permission;
@@ -43,6 +41,16 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
     public UserRoleServiceImpl(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
+    }
+
+    @Override
+    public boolean existsByUserIdAndRoleId(Long userId, Long roleId) {
+        LambdaQueryWrapper<UserRole> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(UserRole::getUserId, userId);
+        queryWrapper.eq(UserRole::getRoleId, roleId);
+
+        return this.count(queryWrapper) != 0;
     }
 
     @Override
@@ -113,6 +121,30 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
         }).collect(Collectors.toList()));
 
         return userRoleResponsePage;
+    }
+
+    @Override
+    public void create(CreateUserRoleRequest createUserRoleRequest) {
+        if (this.userService.notExistsById(createUserRoleRequest.getUserId())) {
+            throw new BusinessException("该用户不存在");
+        }
+
+        if (this.roleService.notExistsById(createUserRoleRequest.getRoleId())) {
+            throw new BusinessException("该角色不存在");
+        }
+
+        if (this.existsByUserIdAndRoleId(createUserRoleRequest.getUserId(), createUserRoleRequest.getRoleId())) {
+            throw new BusinessException("该用户角色已存在");
+        }
+
+        UserRole userRole = new UserRole();
+
+        userRole.setUserId(createUserRoleRequest.getUserId());
+        userRole.setRoleId(createUserRoleRequest.getRoleId());
+
+        if (!this.save(userRole)) {
+            throw new BusinessException("添加用户角色失败");
+        }
     }
 
     @Override

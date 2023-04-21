@@ -32,6 +32,13 @@ public class UserRoleController {
         return Result.success(userRoleResponsePage);
     }
 
+    @PostMapping("/user-role")
+    public Result<Void> create(@RequestBody @Valid CreateUserRoleRequest createUserRoleRequest) {
+        this.userRoleService.create(createUserRoleRequest);
+
+        return Result.success();
+    }
+
     @DeleteMapping("/user-role")
     public Result<Void> remove(RemoveUserRoleRequest removeUserRoleRequest) {
         this.userRoleService.remove(removeUserRoleRequest);
