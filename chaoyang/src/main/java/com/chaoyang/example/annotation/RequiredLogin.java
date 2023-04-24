@@ -6,17 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 权限注解
+ * 登录注解
  *
  * @author 韩朝阳
- * @since 2023/3/19
+ * @since 2023/4/23
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequiredPermission {
-
-    String[] value() default {};
-
-    boolean and() default false;
+public @interface RequiredLogin {
 
 }

@@ -11,11 +11,11 @@ import java.lang.annotation.Target;
  * @author 韩朝阳
  * @since 2023/3/19
  */
-@Target({ElementType.TYPE, ElementType.METHOD})  // TODO 类上要不要
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequiredRole {
 
-    String[] roles() default {};
+    String[] value() default {};
 
     boolean and() default false;
 
