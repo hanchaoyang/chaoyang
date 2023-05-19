@@ -16,14 +16,14 @@ import java.util.Collections;
  * @since 2023/3/16
  */
 @Configuration
-@ConditionalOnProperty(prefix = "spring.profiles", name = "active", havingValue = "private ")
+//@ConditionalOnProperty(prefix = "spring.profiles", name = "active", havingValue = "private ")
 public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.setAllowedOrigins(Collections.singletonList("*"));
+        corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
         corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
         corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
         corsConfiguration.setAllowCredentials(true);
