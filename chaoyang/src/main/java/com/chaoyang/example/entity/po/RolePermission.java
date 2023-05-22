@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoyang.example.constant.BasicConstant;
 import lombok.Data;
 
 //import javax.persistence.Entity;
@@ -41,5 +42,13 @@ public class RolePermission {
      */
     @TableField("permission_id")
     private Long permissionId;
+
+    /**
+     * 是否是基础数据
+     *
+     * @see BasicConstant
+     */
+    @TableField("basic")
+    private Integer basic;
 
 }

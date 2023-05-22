@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoyang.example.constant.BasicConstant;
 import com.chaoyang.example.constant.UserStatusConstant;
 import lombok.Data;
 
@@ -56,5 +57,13 @@ public class User {
      */
     @TableField("status")
     private Integer status;
+
+    /**
+     * 是否是基础数据
+     *
+     * @see BasicConstant
+     */
+    @TableField("basic")
+    private Integer basic;
 
 }
