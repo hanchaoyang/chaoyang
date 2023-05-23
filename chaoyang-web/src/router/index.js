@@ -51,7 +51,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '首页', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'home' }
     }]
   },
 
@@ -60,7 +60,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/example/table',
     name: 'Example',
-    meta: { title: '系统管理', icon: 'el-icon-s-help' },
+    meta: { title: '系统管理', icon: 'setting' },
     children: [
       // {
       //   path: 'table',
@@ -72,19 +72,19 @@ export const constantRoutes = [
         path: 'user',
         name: 'User',
         component: () => import('@/views/user/index'),
-        meta: { title: '用户管理', icon: 'table' }
+        meta: { title: '用户管理', icon: 'user' }
       },
       {
         path: 'role',
         name: 'Role',
         component: () => import('@/views/role/index'),
-        meta: { title: '角色管理', icon: 'table' }
+        meta: { title: '角色管理', icon: 'role' }
       },
       {
         path: 'permission',
         name: 'Permission',
         component: () => import('@/views/permission/index'),
-        meta: { title: '权限管理', icon: 'table' }
+        meta: { title: '权限管理', icon: 'permission' }
       },
       // {
       //   path: 'tree',
@@ -94,7 +94,6 @@ export const constantRoutes = [
       // }
     ]
   },
-
   // {
   //   path: '/form',
   //   component: Layout,

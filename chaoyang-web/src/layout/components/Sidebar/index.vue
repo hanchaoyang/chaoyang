@@ -2,6 +2,7 @@
   <div :class="{'has-logo':showLogo}">
     <logo v-if="showLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
+<!--    <el-scrollbar wrap-class="scrollbar-wrapper" style="border-right: 1px solid #EBEEF5">-->
       <el-menu
         :default-active="activeMenu"
         :collapse="isCollapse"
