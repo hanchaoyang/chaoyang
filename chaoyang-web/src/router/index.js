@@ -166,16 +166,16 @@ export const constantRoutes = [
   //   ]
   // },
   //
-  // {
-  //   path: 'external-link',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-  //       meta: { title: 'External Link', icon: 'link' }
-  //     }
-  //   ]
-  // },
+  {
+    path: 'external-link',
+    component: Layout,
+    children: [
+      {
+        path: 'https://github.com/hanchaoyang/chaoyang',
+        meta: { title: 'Github', icon: 'link' }
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
