@@ -1,1 +1,31 @@
-
+server:
+  port: 8080
+spring:
+  application:
+    name: chaoyang
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/chaoyang?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
+    database: 0
+  flyway:
+    baseline-on-migrate: true
+mybatis-plus:
+  global-config:
+    banner: false
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  config: classpath:logback-spring.xml
+async:
+  executor:
+    core-pool-size: 10
+    max-pool-size: 30
+    queue-capacity: 100
+    keep-alive-seconds: 60
+    thread-name-prefix: thread-
