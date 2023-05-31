@@ -1,6 +1,8 @@
 package com.chaoyang.example.entity.dto.response;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 登录响应类
@@ -8,7 +10,9 @@ import lombok.Data;
  * @author 韩朝阳
  * @since 2023/3/21
  */
-@Data
+@Builder
+@Getter
+@Setter
 public class LoginResponse {
 
     /**
