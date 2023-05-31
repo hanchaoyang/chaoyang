@@ -12,8 +12,8 @@ import lombok.Data;
 public class FindRoleRequest {
 
     /**
-     * 角色主键
+     * 角色ID
      */
-    private Long roleId;
+    private Long id;
 
 }

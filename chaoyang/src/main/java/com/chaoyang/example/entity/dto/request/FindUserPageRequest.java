@@ -20,32 +20,33 @@ public class FindUserPageRequest {
      * 用户昵称
      */
     @Length(min = 1, max = 20, message = "用户昵称长度为1-20个字符")
-    private String userNickname;
+    private String nickname;
 
     /**
-     * 用户手机号
+     * 用户账号
      */
-    @Length(min = 1, max = 11, message = "用户手机号长度为1-11个字符")
-    private String userPhone;
+    @Length(min = 4, max = 20, message = "用户账号长度为4-20个字符")
+    private String account;
 
     /**
      * 用户状态
      *
      * @see UserStatusConstant
      */
-    private Integer userStatus;
+    private Integer status;
 
     /**
      * 页码
      */
     @NotNull(message = "页码不能为空")
+    @Range(min = 1L, max = 100000000L, message = "页码为1-100000000")
     private Long current;
 
     /**
      * 页面大小
      */
     @NotNull(message = "页面大小不能为空")
-    @Range(min = 1L, max = 100L, message = "页面大小为1-100")
+    @Range(min = 1L, max = 1000L, message = "页面大小为1-10000")
     private Long size;
 
 }

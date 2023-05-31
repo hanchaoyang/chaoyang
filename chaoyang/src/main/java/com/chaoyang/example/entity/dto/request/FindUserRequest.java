@@ -2,6 +2,8 @@ package com.chaoyang.example.entity.dto.request;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * 查询用户请求类
  *
@@ -11,6 +13,10 @@ import lombok.Data;
 @Data
 public class FindUserRequest {
 
-    private Long userId;
+    /**
+     * 用户ID
+     */
+    @NotNull(message = "用户ID不能为空")
+    private Long id;
 
 }

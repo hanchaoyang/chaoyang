@@ -11,6 +11,9 @@ import lombok.Data;
 @Data
 public class FindPermissionRequest {
 
-    private Long permissionId;
+    /**
+     * 权限ID
+     */
+    private Long id;
 
 }
