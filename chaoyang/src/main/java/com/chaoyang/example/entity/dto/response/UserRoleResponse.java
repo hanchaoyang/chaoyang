@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * 用户角色响应类
+ * 用户角色关联响应类
  *
  * @author 韩朝阳
  * @since 2023/4/20
