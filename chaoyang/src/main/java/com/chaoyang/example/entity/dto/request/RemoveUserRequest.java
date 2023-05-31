@@ -14,9 +14,9 @@ import javax.validation.constraints.NotNull;
 public class RemoveUserRequest {
 
     /**
-     * 用户主键
+     * 用户ID
      */
-    @NotNull(message = "用户主键不能为空")
-    private Long userId;
+    @NotNull(message = "用户ID不能为空")
+    private Long id;
 
 }

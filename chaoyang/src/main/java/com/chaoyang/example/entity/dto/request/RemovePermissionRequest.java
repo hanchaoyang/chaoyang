@@ -14,9 +14,9 @@ import javax.validation.constraints.NotNull;
 public class RemovePermissionRequest {
 
     /**
-     * 权限主键
+     * 权限ID
      */
-    @NotNull(message = "权限主键不能为空")
-    private Long permissionId;
+    @NotNull(message = "权限ID不能为空")
+    private Long id;
 
 }

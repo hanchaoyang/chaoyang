@@ -14,9 +14,9 @@ import javax.validation.constraints.NotNull;
 public class RemoveRoleRequest {
 
     /**
-     * 角色主键
+     * 角色ID
      */
-    @NotNull(message = "角色主键不能为空")
-    private Long roleId;
+    @NotNull(message = "角色ID不能为空")
+    private Long id;
 
 }
