@@ -16,23 +16,23 @@ import javax.validation.constraints.NotNull;
 public class ModifyPermissionRequest {
 
     /**
-     * 权限主键
+     * 权限ID
      */
-    @NotNull(message = "权限主键不能为空")
-    private Long permissionId;
+    @NotNull(message = "权限ID不能为空")
+    private Long id;
 
     /**
      * 权限名称
      */
     @NotBlank(message = "权限名称不能为空")
     @Length(min = 1, max = 20, message = "权限名称长度为1-20个字符")
-    private String permissionName;
+    private String name;
 
     /**
      * 权限标识
      */
     @NotBlank(message = "权限标识不能为空")
     @Length(min = 1, max = 40, message = "权限标识长度为1-40个字符")
-    private String permissionCode;
+    private String code;
 
 }

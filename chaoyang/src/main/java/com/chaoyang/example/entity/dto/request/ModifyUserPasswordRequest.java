@@ -1,6 +1,5 @@
 package com.chaoyang.example.entity.dto.request;
 
-import com.chaoyang.example.constant.UserStatusConstant;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -17,16 +16,16 @@ import javax.validation.constraints.NotNull;
 public class ModifyUserPasswordRequest {
 
     /**
-     * 用户主键
+     * 用户ID
      */
-    @NotNull(message = "用户主键不能为空")
-    private Long userId;
+    @NotNull(message = "用户ID不能为空")
+    private Long id;
 
     /**
      * 用户密码
      */
     @NotBlank(message = "用户密码不能为空")
     @Length(min = 6, max = 20, message = "用户密码长度为6-20个字符")
-    private String userPassword;
+    private String password;
 
 }

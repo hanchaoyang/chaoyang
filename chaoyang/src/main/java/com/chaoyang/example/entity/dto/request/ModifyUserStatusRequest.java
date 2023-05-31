@@ -15,10 +15,10 @@ import javax.validation.constraints.NotNull;
 public class ModifyUserStatusRequest {
 
     /**
-     * 用户主键
+     * 用户ID
      */
-    @NotNull(message = "用户主键不能为空")
-    private Long userId;
+    @NotNull(message = "用户ID不能为空")
+    private Long id;
 
     /**
      * 用户状态
@@ -26,6 +26,6 @@ public class ModifyUserStatusRequest {
      * @see UserStatusConstant
      */
     @NotNull(message = "用户状态不能为空")
-    private Integer userStatus;
+    private Integer status;
 
 }
