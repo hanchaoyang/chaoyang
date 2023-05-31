@@ -14,15 +14,15 @@ import javax.validation.constraints.NotNull;
 public class CreateUserRoleRequest {
 
     /**
-     * 用户主键
+     * 用户ID
      */
-    @NotNull(message = "用户主键不能为空")
+    @NotNull(message = "用户ID不能为空")
     private Long userId;
 
     /**
-     * 角色主键
+     * 角色ID
      */
-    @NotNull(message = "角色主键不能为空")
+    @NotNull(message = "角色ID不能为空")
     private Long roleId;
 
 }
