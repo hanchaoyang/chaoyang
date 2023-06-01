@@ -1,11 +1,9 @@
 package com.chaoyang.example.exception;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.chaoyang.example.entity.dto.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,51 +20,59 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     /**
-     * 业务异常
-     */
-    @ExceptionHandler(BusinessException.class)
-    public Result<Void> handleBusinessException(BusinessException e) {
-        return Result.of(e.getCode(), e.getMessage());
-    }
-
-    /**
-     * 认证异常
-     */
-    @ExceptionHandler(AuthException.class)
-    public Result<Void> handleAuthException(AuthException e) {
-        return Result.of(e.getCode(), e.getMessage());
-    }
-
-    /**
-     * 参数错误
+     * 参数异常
      */
     @ExceptionHandler(ParameterException.class)
     public Result<Void> handleParameterException(ParameterException e) {
-        return Result.of(e.getCode(), e.getMessage());
+        return Result.of(ParameterException.getCode(), e.getMessage());
     }
 
     /**
-     * 参数错误
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Result<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return Result.of(400, "参数错误");
-    }
-
-    /**
-     * 参数校验异常
+     * 参数异常
      */
     @ExceptionHandler(BindException.class)
     public Result<Void> handleBindException(BindException e) {
         List<ObjectError> errors = e.getAllErrors();
 
-        if (CollectionUtil.isNotEmpty(errors)) {
+        if (!errors.isEmpty()) {
             ObjectError error = errors.get(0);
 
-            return Result.of(400, error.getDefaultMessage());
+            return Result.of(ParameterException.getCode(), error.getDefaultMessage());
         }
 
-        return Result.of(400, "参数错误");
+        return Result.of(ParameterException.getCode(), "参数错误");
+    }
+
+    /**
+     * 认证异常
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    public Result<Void> handleAuthenticationException(AuthenticationException e) {
+        return Result.of(AuthenticationException.getCode(), e.getMessage());
+    }
+
+    /**
+     * 授权异常
+     */
+    @ExceptionHandler(AuthorizationException.class)
+    public Result<Void> handleAuthorizationException(AuthorizationException e) {
+        return Result.of(AuthorizationException.getCode(), e.getMessage());
+    }
+
+    /**
+     * 业务异常
+     */
+    @ExceptionHandler(BusinessException.class)
+    public Result<Void> handleBusinessException(BusinessException e) {
+        return Result.of(BusinessException.getCode(), e.getMessage());
+    }
+
+    /**
+     * 服务器内部异常
+     */
+    @ExceptionHandler(ServerException.class)
+    public Result<Void> handleServerException(ServerException e) {
+        return Result.of(ServerException.getCode(), e.getMessage());
     }
 
     /**
@@ -74,9 +80,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     public Result<Void> handleRuntimeException(RuntimeException e) {
-        log.error("服务器内部错误", e);
+        log.error("服务器内部异常", e);
 
-        return Result.of(500, "服务器内部错误");
+        return Result.of(ServerException.getCode(), "服务器内部异常");
     }
 
 }
