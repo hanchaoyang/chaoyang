@@ -1,5 +1,6 @@
 package com.chaoyang.example.entity.dto;
 
+import com.chaoyang.example.exception.ServerException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,7 +18,7 @@ import java.io.Serializable;
 @ToString
 public class Result<T> implements Serializable {
 
-    private static final long serialVersionUID = 20230320142400L;
+    private static final long serialVersionUID = 1684831644854L;
 
     private Integer code;
 
@@ -45,11 +46,11 @@ public class Result<T> implements Serializable {
     }
 
     public static Result<Void> error() {
-        return new Result<>(500, "服务器内部错误");
+        return new Result<>(ServerException.getCode(), "服务器内部错误");
     }
 
     public static <T> Result<T> error(T data) {
-        return new Result<>(500, "服务器内部错误", data);
+        return new Result<>(ServerException.getCode(), "服务器内部错误", data);
     }
 
     public static Result<Void> of(Integer code, String message) {
