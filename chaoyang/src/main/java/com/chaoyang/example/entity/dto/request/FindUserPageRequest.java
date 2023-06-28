@@ -25,7 +25,7 @@ public class FindUserPageRequest {
     /**
      * 用户账号
      */
-    @Length(min = 4, max = 20, message = "用户账号长度为4-20个字符")
+    @Length(min = 1, max = 40, message = "用户账号长度为1-40个字符")
     private String account;
 
     /**

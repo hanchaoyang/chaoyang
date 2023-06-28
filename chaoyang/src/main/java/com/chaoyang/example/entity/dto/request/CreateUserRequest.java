@@ -27,7 +27,7 @@ public class CreateUserRequest {
      * 用户账号
      */
     @NotBlank(message = "用户账号不能为空")
-    @Length(min = 4, max = 20, message = "用户账号长度为4-20个字符")
+    @Length(min = 4, max = 40, message = "用户账号长度为4-40个字符")
     private String account;
 
     /**
