@@ -14,26 +14,54 @@ import com.chaoyang.example.entity.po.User;
  */
 public interface UserService extends IService<User> {
 
-    boolean existsById(Long id);
+    /**
+     * 根据账号查询用户是否存在
+     */
+    boolean existsByAccount(String account);
 
+    /**
+     * 根据ID查询用户是否不存在
+     */
     boolean notExistsById(Long id);
 
-    boolean existsByPhone(String phone);
+    /**
+     * 根据账号和密码查询用户
+     */
+    User findByAccountAndPassword(String account, String password);
 
-    User findByPhoneAndPassword(String phone, String password);
+    /**
+     * 根据ID查询用户
+     */
+    UserResponse find(FindUserRequest request);
 
-    UserResponse find(FindUserRequest findUserRequest);
+    /**
+     * 根据条件分页查询用户
+     */
+    Page<UserResponse> findPage(FindUserPageRequest request);
 
-    Page<UserResponse> findPage(FindUserPageRequest findUserPageRequest);
+    /**
+     * 添加用户
+     */
+    void create(CreateUserRequest request);
 
-    void create(CreateUserRequest createUserRequest);
+    /**
+     * 修改用户
+     */
+    void modify(ModifyUserRequest request);
 
-    void modify(ModifyUserRequest modifyUserRequest);
+    /**
+     * 修改用户状态
+     */
+    void modifyStatus(ModifyUserStatusRequest request);
 
-    void modifyStatus(ModifyUserStatusRequest modifyUserStatusRequest);
+    /**
+     * 修改用户密码
+     */
+    void modifyPassword(ModifyUserPasswordRequest request);
 
-    void modifyPassword(ModifyUserPasswordRequest modifyUserPasswordRequest);
-
-    void remove(RemoveUserRequest removeUserRequest);
+    /**
+     * 删除用户
+     */
+    void remove(RemoveUserRequest request);
 
 }

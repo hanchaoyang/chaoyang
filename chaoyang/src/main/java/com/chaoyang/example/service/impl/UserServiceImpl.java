@@ -1,26 +1,28 @@
 package com.chaoyang.example.service.impl;
 
-import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.chaoyang.example.constant.BasicConstant;
 import com.chaoyang.example.constant.UserStatusConstant;
+import com.chaoyang.example.entity.dto.LoginInfo;
 import com.chaoyang.example.entity.dto.request.*;
-import com.chaoyang.example.entity.dto.response.PermissionResponse;
-import com.chaoyang.example.entity.dto.response.RoleResponse;
 import com.chaoyang.example.entity.dto.response.UserResponse;
-import com.chaoyang.example.entity.po.Permission;
-import com.chaoyang.example.entity.po.Role;
 import com.chaoyang.example.entity.po.User;
 import com.chaoyang.example.exception.BusinessException;
+import com.chaoyang.example.exception.ParameterException;
 import com.chaoyang.example.mapper.UserMapper;
 import com.chaoyang.example.service.UserRoleService;
 import com.chaoyang.example.service.UserService;
+import com.chaoyang.example.util.LoginUtil;
+import com.chaoyang.example.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -34,192 +36,164 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    private final LoginUtil loginUtil;
+
     private final UserRoleService userRoleService;
 
     @Override
-    public boolean existsById(Long id) {
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.eq(User::getId, id);
-
-        return this.count(queryWrapper) != 0;
+    public boolean existsByAccount(String account) {
+        return this.count(new LambdaQueryWrapper<User>().eq(User::getAccount, account)) != 0;
     }
 
     @Override
     public boolean notExistsById(Long id) {
-        return !this.existsById(id);
+        return this.count(new LambdaQueryWrapper<User>().eq(User::getId, id)) == 0;
     }
 
     @Override
-    public boolean existsByPhone(String phone) {
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.eq(User::getPhone, phone);
-
-        return this.count(queryWrapper) != 0;
-    }
-
-    @Override
-    public User findByPhoneAndPassword(String phone, String password) {
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.eq(User::getPhone, phone);
-        queryWrapper.eq(User::getPassword, DigestUtil.sha256Hex(DigestUtil.sha256Hex(password)));
+    public User findByAccountAndPassword(String account, String password) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<User>()
+                .select(User::getId, User::getNickname, User::getAccount, User::getStatus, User::getBasic)
+                .eq(User::getAccount, account)
+                .eq(User::getPassword, PasswordUtil.encrypt(password));
 
         return this.getOne(queryWrapper);
     }
 
     @Override
-    public UserResponse find(FindUserRequest findUserRequest) {
-        User user = this.getById(findUserRequest.getUserId());
+    public UserResponse find(FindUserRequest request) {
+        User user = this.getById(request.getId());
 
         if (Objects.isNull(user)) {
-            throw new BusinessException("该用户不存在");
+            throw new BusinessException(BusinessException.Message.USER_NOT_EXISTS);
         }
 
-        UserResponse userResponse = new UserResponse();
-
-        userResponse.setUserId(user.getId());
-        userResponse.setUserNickname(user.getNickname());
-        userResponse.setUserPhone(user.getPhone());
-        userResponse.setUserStatus(user.getStatus());
-
-        return userResponse;
+        return UserResponse.of(user);
     }
 
     @Override
-    public Page<UserResponse> findPage(FindUserPageRequest findUserPageRequest) {
-        Page<User> userPage = new Page<>(findUserPageRequest.getCurrent(), findUserPageRequest.getSize());
+    public Page<UserResponse> findPage(FindUserPageRequest request) {
+        /*
+         * 分页查询
+         */
+        Page<User> page = new Page<>(request.getCurrent(), request.getSize());
 
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<User>()
+                .like(Objects.nonNull(request.getNickname()), User::getNickname, request.getNickname())
+                .like(Objects.nonNull(request.getAccount()), User::getAccount, request.getAccount())
+                .eq(Objects.nonNull(request.getStatus()), User::getStatus, request.getStatus());
 
-        queryWrapper.like(Objects.nonNull(findUserPageRequest.getUserNickname()), User::getNickname, findUserPageRequest.getUserNickname());
-        queryWrapper.like(Objects.nonNull(findUserPageRequest.getUserPhone()), User::getPhone, findUserPageRequest.getUserPhone());
-        queryWrapper.like(Objects.nonNull(findUserPageRequest.getUserStatus()), User::getStatus, findUserPageRequest.getUserStatus());
+        this.page(page, queryWrapper);
 
-        this.page(userPage, queryWrapper);
+        /*
+         * 转换为DTO分页
+         */
+        Page<UserResponse> responsePage = new Page<>();
 
-        Page<UserResponse> userResponsePage = new Page<>();
+        BeanUtils.copyProperties(page, responsePage, "records");
 
-        BeanUtils.copyProperties(userPage, userResponsePage, "records");
+        responsePage.setRecords(page.getRecords().stream().map(UserResponse::of).collect(Collectors.toList()));
 
-        userResponsePage.setRecords(userPage.getRecords().stream().map(user -> {
-            UserResponse userResponse = new UserResponse();
-
-            userResponse.setUserId(user.getId());
-            userResponse.setUserNickname(user.getNickname());
-            userResponse.setUserPhone(user.getPhone());
-            userResponse.setUserStatus(user.getStatus());
-
-            switch (userResponse.getUserStatus()) {
-                case UserStatusConstant.DISABLE:
-                    userResponse.setUserStatusName("禁用");
-
-                    break;
-                case UserStatusConstant.ENABLE:
-                    userResponse.setUserStatusName("启用");
-
-                    break;
-                default:
-            }
-
-            return userResponse;
-        }).collect(Collectors.toList()));
-
-        return userResponsePage;
+        return responsePage;
     }
 
     @Override
-    public void create(CreateUserRequest createUserRequest) {
-        if (this.existsByPhone(createUserRequest.getUserPhone())) {
-            throw new BusinessException("该用户已存在");
+    public void create(CreateUserRequest request) {
+        if (this.existsByAccount(request.getAccount())) {
+            throw new BusinessException(BusinessException.Message.USER_EXISTS);
         }
 
         User user = new User();
 
-        user.setNickname(createUserRequest.getUserNickname());
-        user.setPhone(createUserRequest.getUserPhone());
-        user.setPassword(DigestUtil.sha256Hex(DigestUtil.sha256Hex(createUserRequest.getUserPassword())));
-        user.setStatus(createUserRequest.getUserStatus());
+        user.setNickname(request.getNickname());
+        user.setAccount(request.getAccount());
+        user.setPassword(PasswordUtil.encrypt(request.getPassword()));
+        user.setStatus(request.getStatus());
+        user.setCreateUserId(this.loginUtil.getLoginInfo().getUserId());
+        user.setCreateDateTime(LocalDateTime.now());
 
         if (!this.save(user)) {
-            throw new BusinessException("添加用户失败");
+            throw new BusinessException(BusinessException.Message.CREATE_USER_FAIL);
         }
     }
 
     @Override
-    public void modify(ModifyUserRequest modifyUserRequest) {
-        if (this.notExistsById(modifyUserRequest.getUserId())) {
-            throw new BusinessException("该用户不存在");
+    public void modify(ModifyUserRequest request) {
+        if (this.notExistsById(request.getId())) {
+            throw new BusinessException(BusinessException.Message.USER_NOT_EXISTS);
         }
 
         User user = new User();
 
-        user.setId(modifyUserRequest.getUserId());
-        user.setNickname(modifyUserRequest.getUserNickname());
-        user.setPhone(modifyUserRequest.getUserPhone());
-//        user.setPassword(modifyUserRequest.getUserPassword());
+        user.setId(request.getId());
+        user.setNickname(request.getNickname());
+        user.setAccount(request.getAccount());
+        user.setModifyUserId(this.loginUtil.getLoginInfo().getUserId());
+        user.setModifyDateTime(LocalDateTime.now());
 
         if (!this.updateById(user)) {
-            throw new BusinessException("修改用户失败");
+            throw new BusinessException(BusinessException.Message.MODIFY_USER_FAIL);
         }
     }
 
     @Override
-    public void modifyStatus(ModifyUserStatusRequest modifyUserStatusRequest) {
-        if (!Objects.equals(modifyUserStatusRequest.getUserStatus(), UserStatusConstant.DISABLE) && !Objects.equals(modifyUserStatusRequest.getUserStatus(), UserStatusConstant.ENABLE)) {
-            throw new BusinessException("用户状态参数错误");
+    public void modifyStatus(ModifyUserStatusRequest request) {
+        User user = this.getById(request.getId());
+
+        if (Objects.isNull(user)) {
+            throw new BusinessException(BusinessException.Message.USER_NOT_EXISTS);
         }
 
-        if (Objects.equals(modifyUserStatusRequest.getUserId(), 1L) && Objects.equals(modifyUserStatusRequest.getUserStatus(), UserStatusConstant.DISABLE)) {
-            throw new BusinessException("该用户不能被禁用");
+        if (Objects.equals(user.getBasic(), BasicConstant.TRUE) && Objects.equals(request.getStatus(), UserStatusConstant.DISABLE)) {
+            throw new BusinessException(BusinessException.Message.USER_CANNOT_DISABLE);
         }
 
-        if (this.notExistsById(modifyUserStatusRequest.getUserId())) {
-            throw new BusinessException("该用户不存在");
-        }
-
-        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
-
-        updateWrapper.eq(User::getId, modifyUserStatusRequest.getUserId());
-        updateWrapper.set(User::getStatus, modifyUserStatusRequest.getUserStatus());
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<User>()
+                .eq(User::getId, request.getId())
+                .set(User::getStatus, request.getStatus())
+                .set(User::getModifyUserId, this.loginUtil.getLoginInfo().getUserId())
+                .set(User::getModifyDateTime, LocalDateTime.now());
 
         if (!this.update(updateWrapper)) {
-            throw new BusinessException("修改用户状态失败");
+            throw new BusinessException(BusinessException.Message.MODIFY_USER_STATUS_FAIL);
         }
     }
 
     @Override
-    public void modifyPassword(ModifyUserPasswordRequest modifyUserPasswordRequest) {
-        if (this.notExistsById(modifyUserPasswordRequest.getUserId())) {
-            throw new BusinessException("该用户不存在");
+    public void modifyPassword(ModifyUserPasswordRequest request) {
+        if (this.notExistsById(request.getId())) {
+            throw new BusinessException(BusinessException.Message.USER_NOT_EXISTS);
         }
 
-        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
-
-        updateWrapper.eq(User::getId, modifyUserPasswordRequest.getUserId());
-        updateWrapper.set(User::getPassword, DigestUtil.sha256Hex(DigestUtil.sha256Hex(modifyUserPasswordRequest.getUserPassword())));
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<User>()
+                .eq(User::getId, request.getId())
+                .set(User::getPassword, PasswordUtil.encrypt(request.getPassword()))
+                .set(User::getModifyUserId, this.loginUtil.getLoginInfo().getUserId())
+                .set(User::getModifyDateTime, LocalDateTime.now());
 
         if (!this.update(updateWrapper)) {
-            throw new BusinessException("修改用户密码失败");
+            throw new BusinessException(BusinessException.Message.MODIFY_USER_PASSWORD_FAIL);
         }
     }
 
     @Override
-    public void remove(RemoveUserRequest removeUserRequest) {
-        if (Objects.equals(removeUserRequest.getUserId(), 1L)) {
-            throw new BusinessException("该用户不能被删除");
+    @Transactional(rollbackFor = Exception.class)
+    public void remove(RemoveUserRequest request) {
+        User user = this.getById(request.getId());
+
+        if (Objects.isNull(user)) {
+            throw new BusinessException(BusinessException.Message.USER_NOT_EXISTS);
         }
 
-        if (this.notExistsById(removeUserRequest.getUserId())) {
-            throw new BusinessException("该用户不存在");
+        if (Objects.equals(user.getBasic(), BasicConstant.TRUE)) {
+            throw new BusinessException(BusinessException.Message.USER_CANNOT_DELETE);
         }
 
-        if (!this.removeById(removeUserRequest.getUserId())) {
-            throw new BusinessException("删除用户失败");
+        if (!this.removeById(request.getId())) {
+            throw new BusinessException(BusinessException.Message.REMOVE_USER_FAIL);
         }
 
-        this.userRoleService.removeByUserId(removeUserRequest.getUserId());
+        this.userRoleService.removeByUserId(request.getId());
     }
 
 }

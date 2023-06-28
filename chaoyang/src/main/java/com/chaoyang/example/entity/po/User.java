@@ -8,10 +8,7 @@ import com.chaoyang.example.constant.BasicConstant;
 import com.chaoyang.example.constant.UserStatusConstant;
 import lombok.Data;
 
-//import javax.persistence.Entity;
-//import javax.persistence.GeneratedValue;
-//import javax.persistence.GenerationType;
-//import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 /**
  * 用户实体类
@@ -19,16 +16,13 @@ import lombok.Data;
  * @author 韩朝阳
  * @since 2023/3/16
  */
-//@Entity(name = "user")
 @TableName("user")
 @Data
 public class User {
 
     /**
-     * 主键
+     * ID
      */
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
@@ -39,10 +33,10 @@ public class User {
     private String nickname;
 
     /**
-     * 手机号
+     * 账号
      */
-    @TableField("phone")
-    private String phone;
+    @TableField("account")
+    private String account;
 
     /**
      * 密码
@@ -65,5 +59,29 @@ public class User {
      */
     @TableField("basic")
     private Integer basic;
+
+    /**
+     * 创建用户ID
+     */
+    @TableField("create_user_id")
+    private Long createUserId;
+
+    /**
+     * 创建时间
+     */
+    @TableField("create_date_time")
+    private LocalDateTime createDateTime;
+
+    /**
+     * 最后修改用户ID
+     */
+    @TableField("modify_user_id")
+    private Long modifyUserId;
+
+    /**
+     * 最后修改时间
+     */
+    @TableField("modify_date_time")
+    private LocalDateTime modifyDateTime;
 
 }

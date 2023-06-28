@@ -1,15 +1,18 @@
 package com.chaoyang.example.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoyang.example.annotation.RequiredPermission;
+import com.chaoyang.example.constant.UserStatusConstant;
 import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.UserResponse;
-import com.chaoyang.example.entity.po.User;
+import com.chaoyang.example.exception.ParameterException;
 import com.chaoyang.example.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Objects;
 
 /**
  * 用户控制层
@@ -24,50 +27,78 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/user")
-    public Result<UserResponse> find(FindUserRequest findUserRequest) {
-        UserResponse userResponse = this.userService.find(findUserRequest);
+    @RequiredPermission("user:find")
+    public Result<UserResponse> find(@Valid FindUserRequest request) {
+        UserResponse response = this.userService.find(request);
 
-        return Result.success(userResponse);
+        return Result.success(response);
     }
 
     @GetMapping("/user/page")
-    public Result<Page<UserResponse>> findPage(FindUserPageRequest findUserPageRequest) {
-        Page<UserResponse> userResponsePage = this.userService.findPage(findUserPageRequest);
+    @RequiredPermission("user:find")
+    public Result<Page<UserResponse>> findPage(@Valid FindUserPageRequest request) {
+        /*
+         * 校验状态值是否合法
+         */
+        if (Objects.nonNull(request.getStatus()) && !UserStatusConstant.isValid(request.getStatus())) {
+            throw new ParameterException(ParameterException.Message.USER_STATUS_ERROR);
+        }
 
-        return Result.success(userResponsePage);
+        Page<UserResponse> page = this.userService.findPage(request);
+
+        return Result.success(page);
     }
 
     @PostMapping("/user")
-    public Result<Void> create(@RequestBody @Valid CreateUserRequest createUserRequest) {
-        this.userService.create(createUserRequest);
+    @RequiredPermission("user:create")
+    public Result<Void> create(@RequestBody @Valid CreateUserRequest request) {
+        /*
+         * 校验状态值是否合法
+         */
+        if (!UserStatusConstant.isValid(request.getStatus())) {
+            throw new ParameterException(ParameterException.Message.USER_STATUS_ERROR);
+        }
+
+        this.userService.create(request);
 
         return Result.success();
     }
 
     @PutMapping("/user")
-    public Result<Void> create(@RequestBody @Valid ModifyUserRequest modifyUserRequest) {
-        this.userService.modify(modifyUserRequest);
+    @RequiredPermission("user:modify")
+    public Result<Void> modify(@RequestBody @Valid ModifyUserRequest request) {
+        this.userService.modify(request);
 
         return Result.success();
     }
 
     @PatchMapping("/user/status")
-    public Result<Void> modifyUserStatus(@RequestBody @Valid ModifyUserStatusRequest modifyUserStatusRequest) {
-        this.userService.modifyStatus(modifyUserStatusRequest);
+    @RequiredPermission("user:modify")
+    public Result<Void> modifyUserStatus(@RequestBody @Valid ModifyUserStatusRequest request) {
+        /*
+         * 校验状态值是否合法
+         */
+        if (!UserStatusConstant.isValid(request.getStatus())) {
+            throw new ParameterException(ParameterException.Message.USER_STATUS_ERROR);
+        }
+
+        this.userService.modifyStatus(request);
 
         return Result.success();
     }
 
     @PatchMapping("/user/password")
-    public Result<Void> modifyUserPassword(@RequestBody @Valid ModifyUserPasswordRequest modifyUserPasswordRequest) {
-        this.userService.modifyPassword(modifyUserPasswordRequest);
+    @RequiredPermission("user:modify")
+    public Result<Void> modifyUserPassword(@RequestBody @Valid ModifyUserPasswordRequest request) {
+        this.userService.modifyPassword(request);
 
         return Result.success();
     }
 
     @DeleteMapping("/user")
-    public Result<Void> remove(RemoveUserRequest removeUserRequest) {
-        this.userService.remove(removeUserRequest);
+    @RequiredPermission("user:remove")
+    public Result<Void> remove(@Valid RemoveUserRequest request) {
+        this.userService.remove(request);
 
         return Result.success();
     }
