@@ -5,7 +5,7 @@ import com.chaoyang.example.entity.po.UserRole;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 用户角色数据访问层接口
+ * 用户角色关联数据访问层接口
  *
  * @author 韩朝阳
  * @since 2023/3/16
