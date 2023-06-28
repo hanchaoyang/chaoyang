@@ -41,7 +41,7 @@ public class RoleController {
     }
 
     @GetMapping("/role/inactive/page")
-    @RequiredPermission(value = {"user:find", "role:find"}, and = true)
+    @RequiredPermission(value = {"role:find", "user:find"}, and = true)
     public Result<Page<RoleResponse>> findInactivePage(@Valid FindInactiveRolePageRequest request) {
         Page<RoleResponse> page = this.roleService.findInactivePage(request);
 
