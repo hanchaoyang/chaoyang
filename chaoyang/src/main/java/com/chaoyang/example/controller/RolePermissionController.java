@@ -1,6 +1,7 @@
 package com.chaoyang.example.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoyang.example.annotation.RequiredPermission;
 import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
 import com.chaoyang.example.entity.dto.request.FindRolePermissionPageRequest;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 /**
- * 角色权限控制层
+ * 角色权限关联控制层
  *
  * @author 韩朝阳
  * @since 2023/3/23
@@ -25,22 +26,25 @@ public class RolePermissionController {
     private final RolePermissionService rolePermissionService;
 
     @GetMapping("/role-permission/page")
-    public Result<Page<RolePermissionResponse>> findPage(FindRolePermissionPageRequest findRolePermissionPageRequest) {
-        Page<RolePermissionResponse> rolePermissionResponsePage = this.rolePermissionService.findPage(findRolePermissionPageRequest);
+    @RequiredPermission(value = {"role:find", "permission:find"}, and = true)
+    public Result<Page<RolePermissionResponse>> findPage(@Valid FindRolePermissionPageRequest request) {
+        Page<RolePermissionResponse> page = this.rolePermissionService.findPage(request);
 
-        return Result.success(rolePermissionResponsePage);
+        return Result.success(page);
     }
 
     @PostMapping("/role-permission")
-    public Result<Void> create(@RequestBody @Valid CreateRolePermissionRequest createRolePermissionRequest) {
-        this.rolePermissionService.create(createRolePermissionRequest);
+    @RequiredPermission(value = {"role:find", "role:modify", "permission:find"}, and = true)
+    public Result<Void> create(@RequestBody @Valid CreateRolePermissionRequest request) {
+        this.rolePermissionService.create(request);
 
         return Result.success();
     }
 
     @DeleteMapping("/role-permission")
-    public Result<Void> remove(RemoveRolePermissionRequest removeRolePermissionRequest) {
-        this.rolePermissionService.remove(removeRolePermissionRequest);
+    @RequiredPermission(value = {"role:find", "role:modify", "permission:find"}, and = true)
+    public Result<Void> remove(@Valid RemoveRolePermissionRequest request) {
+        this.rolePermissionService.remove(request);
 
         return Result.success();
     }

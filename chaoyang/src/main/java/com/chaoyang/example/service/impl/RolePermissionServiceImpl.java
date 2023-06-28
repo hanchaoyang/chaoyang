@@ -3,6 +3,7 @@ package com.chaoyang.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.chaoyang.example.constant.BasicConstant;
 import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
 import com.chaoyang.example.entity.dto.request.FindRolePermissionPageRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
@@ -14,19 +15,20 @@ import com.chaoyang.example.mapper.RolePermissionMapper;
 import com.chaoyang.example.service.PermissionService;
 import com.chaoyang.example.service.RolePermissionService;
 import com.chaoyang.example.service.RoleService;
+import com.chaoyang.example.util.LoginUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * 角色权限服务层实现类
+ * 角色权限关联服务层实现类
  *
  * @author 韩朝阳
  * @since 2023/3/17
@@ -34,154 +36,120 @@ import java.util.stream.Collectors;
 @Service
 public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper, RolePermission> implements RolePermissionService {
 
+    private final LoginUtil loginUtil;
+
     private final RoleService roleService;
 
     private final PermissionService permissionService;
 
     @Lazy
-    public RolePermissionServiceImpl(RoleService roleService, PermissionService permissionService) {
+    public RolePermissionServiceImpl(LoginUtil loginUtil, RoleService roleService, PermissionService permissionService) {
+        this.loginUtil = loginUtil;
         this.roleService = roleService;
         this.permissionService = permissionService;
     }
 
     @Override
-    public boolean existsById(Long id) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.eq(RolePermission::getId, id);
-
-        return this.count(queryWrapper) != 0;
-    }
-
-    @Override
-    public boolean notExistsById(Long id) {
-        return !this.existsById(id);
-    }
-
-    @Override
     public boolean existsByRoleIdAndPermissionId(Long roleId, Long permissionId) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.eq(RolePermission::getRoleId, roleId);
-        queryWrapper.eq(RolePermission::getPermissionId, permissionId);
+        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<RolePermission>()
+                .eq(RolePermission::getRoleId, roleId)
+                .eq(RolePermission::getPermissionId, permissionId);
 
         return this.count(queryWrapper) != 0;
     }
 
     @Override
     public List<RolePermission> findByRoleId(Long roleId) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.eq(RolePermission::getRoleId, roleId);
-
-        return this.list(queryWrapper);
+        return this.list(new LambdaQueryWrapper<RolePermission>().eq(RolePermission::getRoleId, roleId));
     }
 
     @Override
     public List<RolePermission> findByRoleIds(List<Long> roleIds) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
+        if (roleIds.isEmpty()) {
+            return new ArrayList<>();
+        }
 
-        queryWrapper.in(RolePermission::getRoleId, roleIds);
-
-        return this.list(queryWrapper);
+        return this.list(new LambdaQueryWrapper<RolePermission>().in(RolePermission::getRoleId, roleIds));
     }
 
     @Override
-    public Page<RolePermissionResponse> findPage(FindRolePermissionPageRequest findRolePermissionPageRequest) {
-        Page<RolePermission> rolePermissionPage = new Page<>(findRolePermissionPageRequest.getCurrent(), findRolePermissionPageRequest.getSize());
+    public Page<RolePermissionResponse> findPage(FindRolePermissionPageRequest request) {
+        Page<RolePermission> page = new Page<>(request.getCurrent(), request.getSize());
 
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<RolePermission>().eq(RolePermission::getRoleId, request.getRoleId());
 
-        queryWrapper.eq(RolePermission::getRoleId, findRolePermissionPageRequest.getRoleId());
+        this.page(page, queryWrapper);
 
-        this.page(rolePermissionPage, queryWrapper);
+        Page<RolePermissionResponse> responsePage = new Page<>();
 
-        Page<RolePermissionResponse> rolePermissionResponsePage = new Page<>();
+        BeanUtils.copyProperties(page, responsePage, "records");
 
-        BeanUtils.copyProperties(rolePermissionPage, rolePermissionResponsePage, "records");
+        List<Long> permissionIds = page.getRecords().stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
 
-        List<Long> permissionIds = rolePermissionPage.getRecords().stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
+        Map<Long, Permission> permissionMap = this.permissionService.findMapByIds(permissionIds);
 
-        Map<Long, Permission> permissionMap;
+        responsePage.setRecords(page.getRecords().stream().map(rolePermission -> RolePermissionResponse.of(rolePermission, null, permissionMap)).collect(Collectors.toList()));
 
-        if (permissionIds.isEmpty()) {
-            permissionMap = new HashMap<>();
-        } else {
-            List<Permission> permissions = this.permissionService.findByIds(permissionIds);
-
-            permissionMap = permissions.stream().collect(Collectors.toMap(Permission::getId, Function.identity()));
-        }
-
-        rolePermissionResponsePage.setRecords(rolePermissionPage.getRecords().stream().map(rolePermission -> {
-            Long permissionId = rolePermission.getPermissionId();
-
-            Permission permission = permissionMap.get(permissionId);
-
-            RolePermissionResponse rolePermissionResponse = new RolePermissionResponse();
-
-            rolePermissionResponse.setRolePermissionId(rolePermission.getId());
-            rolePermissionResponse.setPermissionId(rolePermission.getPermissionId());
-
-            if (Objects.nonNull(permission)) {
-                rolePermissionResponse.setPermissionName(permission.getName());
-                rolePermissionResponse.setPermissionCode(permission.getCode());
-            }
-
-            return rolePermissionResponse;
-        }).collect(Collectors.toList()));
-
-        return rolePermissionResponsePage;
+        return responsePage;
     }
 
     @Override
-    public void create(CreateRolePermissionRequest createRolePermissionRequest) {
-        if (this.roleService.notExistsById(createRolePermissionRequest.getRoleId())) {
-            throw new BusinessException("该角色不存在");
+    public void create(CreateRolePermissionRequest request) {
+        if (this.roleService.notExistsById(request.getRoleId())) {
+            throw new BusinessException(BusinessException.Message.ROLE_NOT_EXISTS);
         }
 
-        if (this.permissionService.notExistsById(createRolePermissionRequest.getPermissionId())) {
-            throw new BusinessException("该权限不存在");
+        if (this.permissionService.notExistsById(request.getPermissionId())) {
+            throw new BusinessException(BusinessException.Message.PERMISSION_NOT_EXISTS);
         }
 
-        if (this.existsByRoleIdAndPermissionId(createRolePermissionRequest.getRoleId(), createRolePermissionRequest.getPermissionId())) {
-            throw new BusinessException("该角色权限已存在");
+        if (this.existsByRoleIdAndPermissionId(request.getRoleId(), request.getPermissionId())) {
+            throw new BusinessException(BusinessException.Message.ROLE_PERMISSION_EXISTS);
         }
 
         RolePermission rolePermission = new RolePermission();
 
-        rolePermission.setRoleId(createRolePermissionRequest.getRoleId());
-        rolePermission.setPermissionId(createRolePermissionRequest.getPermissionId());
+        rolePermission.setRoleId(request.getRoleId());
+        rolePermission.setPermissionId(request.getPermissionId());
+        rolePermission.setCreateUserId(this.loginUtil.getLoginInfo().getUserId());
+        rolePermission.setCreateDateTime(LocalDateTime.now());
 
         if (!this.save(rolePermission)) {
-            throw new BusinessException("添加角色权限失败");
+            throw new BusinessException(BusinessException.Message.CREATE_ROLE_PERMISSION_FAIL);
         }
     }
 
     @Override
-    public void remove(RemoveRolePermissionRequest removeRolePermissionRequest) {
-        if (this.notExistsById(removeRolePermissionRequest.getRolePermissionId())) {
-            throw new BusinessException("该角色权限不存在");
+    public void remove(RemoveRolePermissionRequest request) {
+        RolePermission rolePermission = this.getById(request.getId());
+
+        if (Objects.isNull(rolePermission)) {
+            throw new BusinessException(BusinessException.Message.ROLE_PERMISSION_NOT_EXISTS);
         }
 
-        if (!this.removeById(removeRolePermissionRequest.getRolePermissionId())) {
-            throw new BusinessException("删除角色权限失败");
+        if (Objects.equals(rolePermission.getBasic(), BasicConstant.TRUE)) {
+            throw new BusinessException(BusinessException.Message.ROLE_PERMISSION_CANNOT_REMOVE);
+        }
+
+        if (!this.removeById(request.getId())) {
+            throw new BusinessException(BusinessException.Message.REMOVE_ROLE_PERMISSION_FAIL);
         }
     }
 
     @Override
     public void removeByRoleId(Long roleId) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.eq(RolePermission::getRoleId, roleId);
+        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<RolePermission>()
+                .eq(RolePermission::getRoleId, roleId)
+                .eq(RolePermission::getBasic, BasicConstant.FALSE);
 
         this.remove(queryWrapper);
     }
 
     @Override
     public void removeByPermissionId(Long permissionId) {
-        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.eq(RolePermission::getPermissionId, permissionId);
+        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<RolePermission>()
+                .eq(RolePermission::getPermissionId, permissionId)
+                .eq(RolePermission::getBasic, BasicConstant.FALSE);
 
         this.remove(queryWrapper);
     }
