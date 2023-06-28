@@ -1,6 +1,7 @@
 package com.chaoyang.example.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoyang.example.annotation.RequiredPermission;
 import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.PermissionResponse;
@@ -24,43 +25,49 @@ public class RoleController {
     private final RoleService roleService;
 
     @GetMapping("/role")
-    public Result<RoleResponse> find(FindRoleRequest findRoleRequest) {
-        RoleResponse roleResponse = this.roleService.find(findRoleRequest);
+    @RequiredPermission("role:find")
+    public Result<RoleResponse> find(@Valid FindRoleRequest request) {
+        RoleResponse response = this.roleService.find(request);
 
-        return Result.success(roleResponse);
+        return Result.success(response);
     }
 
     @GetMapping("/role/page")
-    public Result<Page<RoleResponse>> findPage(FindRolePageRequest findRolePageRequest) {
-        Page<RoleResponse> roleResponsePage = this.roleService.findPage(findRolePageRequest);
+    @RequiredPermission("role:find")
+    public Result<Page<RoleResponse>> findPage(@Valid FindRolePageRequest request) {
+        Page<RoleResponse> page = this.roleService.findPage(request);
 
-        return Result.success(roleResponsePage);
+        return Result.success(page);
     }
 
     @GetMapping("/role/inactive/page")
-    public Result<Page<RoleResponse>> findInactivePage(FindInactiveRolePageRequest findInactiveRolePageRequest) {
-        Page<RoleResponse> inactiveRolePage = this.roleService.findInactivePage(findInactiveRolePageRequest);
+    @RequiredPermission(value = {"user:find", "role:find"}, and = true)
+    public Result<Page<RoleResponse>> findInactivePage(@Valid FindInactiveRolePageRequest request) {
+        Page<RoleResponse> page = this.roleService.findInactivePage(request);
 
-        return Result.success(inactiveRolePage);
+        return Result.success(page);
     }
 
     @PostMapping("/role")
-    public Result<Void> create(@RequestBody @Valid CreateRoleRequest createRoleRequest) {
-        this.roleService.create(createRoleRequest);
+    @RequiredPermission("role:create")
+    public Result<Void> create(@RequestBody @Valid CreateRoleRequest request) {
+        this.roleService.create(request);
 
         return Result.success();
     }
 
     @PutMapping("/role")
-    public Result<Void> modify(@RequestBody @Valid ModifyRoleRequest modifyRoleRequest) {
-        this.roleService.modify(modifyRoleRequest);
+    @RequiredPermission("role:modify")
+    public Result<Void> modify(@RequestBody @Valid ModifyRoleRequest request) {
+        this.roleService.modify(request);
 
         return Result.success();
     }
 
     @DeleteMapping("/role")
-    public Result<Void> remove(RemoveRoleRequest removeRoleRequest) {
-        this.roleService.remove(removeRoleRequest);
+    @RequiredPermission("role:remove")
+    public Result<Void> remove(@Valid RemoveRoleRequest request) {
+        this.roleService.remove(request);
 
         return Result.success();
     }
