@@ -1,6 +1,7 @@
 package com.chaoyang.example.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoyang.example.annotation.RequiredPermission;
 import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.PermissionResponse;
@@ -23,43 +24,49 @@ public class PermissionController {
     private final PermissionService permissionService;
 
     @GetMapping("/permission")
-    public Result<PermissionResponse> find(FindPermissionRequest findPermissionRequest) {
-        PermissionResponse permissionResponse = this.permissionService.find(findPermissionRequest);
+    @RequiredPermission("permission:find")
+    public Result<PermissionResponse> find(@Valid FindPermissionRequest request) {
+        PermissionResponse response = this.permissionService.find(request);
 
-        return Result.success(permissionResponse);
+        return Result.success(response);
     }
 
     @GetMapping("/permission/page")
-    public Result<Page<PermissionResponse>> findPage(FindPermissionPageRequest findPermissionPageRequest) {
-        Page<PermissionResponse> permissionPage = this.permissionService.findPage(findPermissionPageRequest);
+    @RequiredPermission("permission:find")
+    public Result<Page<PermissionResponse>> findPage(@Valid FindPermissionPageRequest request) {
+        Page<PermissionResponse> page = this.permissionService.findPage(request);
 
-        return Result.success(permissionPage);
+        return Result.success(page);
     }
 
     @GetMapping("/permission/inactive/page")
-    public Result<Page<PermissionResponse>> findInactivePage(FindInactivePermissionPageRequest findInactivePermissionPageRequest) {
-        Page<PermissionResponse> inactivePermissionPage = this.permissionService.findInactivePage(findInactivePermissionPageRequest);
+    @RequiredPermission(value = {"permission:find", "role:find"}, and = true)
+    public Result<Page<PermissionResponse>> findInactivePage(@Valid FindInactivePermissionPageRequest request) {
+        Page<PermissionResponse> page = this.permissionService.findInactivePage(request);
 
-        return Result.success(inactivePermissionPage);
+        return Result.success(page);
     }
 
     @PostMapping("/permission")
-    public Result<Void> create(@RequestBody @Valid CreatePermissionRequest createPermissionRequest) {
-        this.permissionService.create(createPermissionRequest);
+    @RequiredPermission("permission:create")
+    public Result<Void> create(@RequestBody @Valid CreatePermissionRequest request) {
+        this.permissionService.create(request);
 
         return Result.success();
     }
 
     @PutMapping("/permission")
-    public Result<Void> modify(@RequestBody @Valid ModifyPermissionRequest modifyPermissionRequest) {
-        this.permissionService.modify(modifyPermissionRequest);
+    @RequiredPermission("permission:modify")
+    public Result<Void> modify(@RequestBody @Valid ModifyPermissionRequest request) {
+        this.permissionService.modify(request);
 
         return Result.success();
     }
 
     @DeleteMapping("/permission")
-    public Result<Void> remove(RemovePermissionRequest removePermissionRequest) {
-        this.permissionService.remove(removePermissionRequest);
+    @RequiredPermission("permission:remove")
+    public Result<Void> remove(@Valid RemovePermissionRequest request) {
+        this.permissionService.remove(request);
 
         return Result.success();
     }

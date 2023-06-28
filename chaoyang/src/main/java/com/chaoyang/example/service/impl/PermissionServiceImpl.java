@@ -3,22 +3,24 @@ package com.chaoyang.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.chaoyang.example.constant.BasicConstant;
 import com.chaoyang.example.entity.dto.request.*;
 import com.chaoyang.example.entity.dto.response.PermissionResponse;
-import com.chaoyang.example.entity.dto.response.RoleResponse;
 import com.chaoyang.example.entity.po.Permission;
-import com.chaoyang.example.entity.po.Role;
 import com.chaoyang.example.entity.po.RolePermission;
 import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.PermissionMapper;
 import com.chaoyang.example.service.PermissionService;
 import com.chaoyang.example.service.RolePermissionService;
+import com.chaoyang.example.util.LoginUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -31,174 +33,164 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements PermissionService {
 
+    private final LoginUtil loginUtil;
+
     private final RolePermissionService rolePermissionService;
 
     @Override
-    public boolean existsById(Long id) {
-        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.eq(Permission::getId, id);
-
-        return this.count(queryWrapper) != 0;
-    }
-
-    @Override
     public boolean notExistsById(Long id) {
-        return !this.existsById(id);
+        return this.count(new LambdaQueryWrapper<Permission>().eq(Permission::getId, id)) == 0;
     }
 
     @Override
     public boolean existsByNameOrCode(String name, String code, Long excludeId) {
-        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.and(nestedQueryWrapper -> {
-            nestedQueryWrapper.eq(Permission::getName, name);
-            nestedQueryWrapper.or();
-            nestedQueryWrapper.eq(Permission::getCode, code);
-        });
-        queryWrapper.ne(Objects.nonNull(excludeId), Permission::getId, excludeId);
+        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<Permission>()
+                .and(nestedQueryWrapper -> {
+                    nestedQueryWrapper.eq(Permission::getName, name);
+                    nestedQueryWrapper.or();
+                    nestedQueryWrapper.eq(Permission::getCode, code);
+                }).ne(Objects.nonNull(excludeId), Permission::getId, excludeId);
 
         return this.count(queryWrapper) != 0;
     }
 
     @Override
-    public boolean notExistsByNameOrCode(String name, String code) {
-        return !this.existsByNameOrCode(name, code, null);
-    }
-
-    @Override
     public List<Permission> findByIds(List<Long> ids) {
-        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.in(Permission::getId, ids);
-
-        return this.list(queryWrapper);
-    }
-
-    @Override
-    public PermissionResponse find(FindPermissionRequest findPermissionRequest) {
-        Permission permission = this.getById(findPermissionRequest.getPermissionId());
-
-        if (Objects.isNull(permission)) {
-            throw new BusinessException("该权限不存在");
+        if (ids.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        PermissionResponse permissionResponse = new PermissionResponse();
-
-        permissionResponse.setPermissionId(permission.getId());
-        permissionResponse.setPermissionName(permission.getName());
-        permissionResponse.setPermissionCode(permission.getCode());
-
-        return permissionResponse;
+        return this.list(new LambdaQueryWrapper<Permission>().in(Permission::getId, ids));
     }
 
     @Override
-    public Page<PermissionResponse> findPage(FindPermissionPageRequest findPermissionPageRequest) {
-        Page<Permission> permissionPage = new Page<>(findPermissionPageRequest.getCurrent(), findPermissionPageRequest.getSize());
+    public Map<Long, Permission> findMapByIds(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return new HashMap<>();
+        }
 
-        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
+        List<Permission> permissions = this.findByIds(ids);
 
-        queryWrapper.like(Objects.nonNull(findPermissionPageRequest.getPermissionName()), Permission::getName, findPermissionPageRequest.getPermissionName());
-        queryWrapper.like(Objects.nonNull(findPermissionPageRequest.getPermissionCode()), Permission::getCode, findPermissionPageRequest.getPermissionCode());
-
-        this.page(permissionPage, queryWrapper);
-
-        Page<PermissionResponse> permissionResponsePage = new Page<>();
-
-        BeanUtils.copyProperties(permissionPage, permissionResponsePage, "records");
-
-        permissionResponsePage.setRecords(permissionPage.getRecords().stream().map(permission -> {
-            PermissionResponse permissionResponse = new PermissionResponse();
-
-            permissionResponse.setPermissionId(permission.getId());
-            permissionResponse.setPermissionName(permission.getName());
-            permissionResponse.setPermissionCode(permission.getCode());
-
-            return permissionResponse;
-        }).collect(Collectors.toList()));
-
-        return permissionResponsePage;
+        return permissions.stream().collect(Collectors.toMap(Permission::getId, Function.identity()));
     }
 
     @Override
-    public Page<PermissionResponse> findInactivePage(FindInactivePermissionPageRequest findInactivePermissionPageRequest) {
-        List<RolePermission> rolePermissions = this.rolePermissionService.findByRoleId(findInactivePermissionPageRequest.getRoleId());
+    public PermissionResponse find(FindPermissionRequest request) {
+        Permission permission = this.getById(request.getId());
+
+        if (Objects.isNull(permission)) {
+            throw new BusinessException(BusinessException.Message.PERMISSION_NOT_EXISTS);
+        }
+
+        return PermissionResponse.of(permission);
+    }
+
+    @SuppressWarnings("Duplicates")
+    @Override
+    public Page<PermissionResponse> findPage(FindPermissionPageRequest request) {
+        Page<Permission> page = new Page<>(request.getCurrent(), request.getSize());
+
+        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<Permission>()
+                .like(Objects.nonNull(request.getName()), Permission::getName, request.getName())
+                .like(Objects.nonNull(request.getCode()), Permission::getCode, request.getCode());
+
+        this.page(page, queryWrapper);
+
+        Page<PermissionResponse> responsePage = new Page<>();
+
+        BeanUtils.copyProperties(page, responsePage, "records");
+
+        responsePage.setRecords(page.getRecords().stream().map(PermissionResponse::of).collect(Collectors.toList()));
+
+        return responsePage;
+    }
+
+    @SuppressWarnings("Duplicates")
+    @Override
+    public Page<PermissionResponse> findInactivePage(FindInactivePermissionPageRequest request) {
+        List<RolePermission> rolePermissions = this.rolePermissionService.findByRoleId(request.getRoleId());
 
         List<Long> excludedIds = rolePermissions.stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
 
-        Page<Permission> permissionPage = new Page<>(findInactivePermissionPageRequest.getCurrent(), findInactivePermissionPageRequest.getSize());
+        Page<Permission> page = new Page<>(request.getCurrent(), request.getSize());
 
-        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<Permission>()
+                .notIn(!excludedIds.isEmpty(), Permission::getId, excludedIds);
 
-        queryWrapper.notIn(!excludedIds.isEmpty(), Permission::getId, excludedIds);
+        this.page(page, queryWrapper);
 
-        this.page(permissionPage, queryWrapper);
+        Page<PermissionResponse> responsePage = new Page<>();
 
-        Page<PermissionResponse> inactivePermissionResponsePage = new Page<>();
+        BeanUtils.copyProperties(page, responsePage, "records");
 
-        BeanUtils.copyProperties(permissionPage, inactivePermissionResponsePage, "records");
+        responsePage.setRecords(page.getRecords().stream().map(PermissionResponse::of).collect(Collectors.toList()));
 
-        inactivePermissionResponsePage.setRecords(permissionPage.getRecords().stream().map(permission -> {
-            PermissionResponse permissionResponse = new PermissionResponse();
-
-            permissionResponse.setPermissionId(permission.getId());
-            permissionResponse.setPermissionName(permission.getName());
-            permissionResponse.setPermissionCode(permission.getCode());
-
-            return permissionResponse;
-        }).collect(Collectors.toList()));
-
-        return inactivePermissionResponsePage;
+        return responsePage;
     }
 
     @Override
-    public void create(CreatePermissionRequest createPermissionRequest) {
-        if (this.existsByNameOrCode(createPermissionRequest.getPermissionName(), createPermissionRequest.getPermissionCode(), null)) {
-            throw new BusinessException("该权限名称或标识已存在");
+    public void create(CreatePermissionRequest request) {
+        if (this.existsByNameOrCode(request.getName(), request.getCode(), null)) {
+            throw new BusinessException(BusinessException.Message.PERMISSION_NAME_OR_CODE_EXISTS);
         }
 
         Permission permission = new Permission();
 
-        permission.setName(createPermissionRequest.getPermissionName());
-        permission.setCode(createPermissionRequest.getPermissionCode());
+        permission.setName(request.getName());
+        permission.setCode(request.getCode());
+        permission.setCreateUserId(this.loginUtil.getLoginInfo().getUserId());
+        permission.setCreateDateTime(LocalDateTime.now());
 
         if (!this.save(permission)) {
-            throw new BusinessException("添加权限失败");
+            throw new BusinessException(BusinessException.Message.CREATE_PERMISSION_FAIL);
         }
     }
 
     @Override
-    public void modify(ModifyPermissionRequest modifyPermissionRequest) {
-        if (this.notExistsById(modifyPermissionRequest.getPermissionId())) {
-            throw new BusinessException("该权限不存在");
+    public void modify(ModifyPermissionRequest request) {
+        Permission permission = this.getById(request.getId());
+
+        if (Objects.isNull(permission)) {
+            throw new BusinessException(BusinessException.Message.PERMISSION_NOT_EXISTS);
         }
 
-        if (this.existsByNameOrCode(modifyPermissionRequest.getPermissionName(), modifyPermissionRequest.getPermissionCode(), modifyPermissionRequest.getPermissionId())) {
-            throw new BusinessException("该权限名称或标识已存在");
+        if (Objects.equals(permission.getBasic(), BasicConstant.TRUE)) {
+            throw new BusinessException(BusinessException.Message.PERMISSION_CANNOT_MODIFY);
         }
 
-        Permission permission = new Permission();
+        if (this.existsByNameOrCode(request.getName(), request.getCode(), request.getId())) {
+            throw new BusinessException(BusinessException.Message.PERMISSION_NAME_OR_CODE_EXISTS);
+        }
 
-        permission.setId(modifyPermissionRequest.getPermissionId());
-        permission.setName(modifyPermissionRequest.getPermissionName());
-        permission.setCode(modifyPermissionRequest.getPermissionCode());
+        permission.setId(request.getId());
+        permission.setName(request.getName());
+        permission.setCode(request.getCode());
+        permission.setModifyUserId(this.loginUtil.getLoginInfo().getUserId());
+        permission.setModifyDateTime(LocalDateTime.now());
 
         if (!this.updateById(permission)) {
-            throw new BusinessException("修改权限失败");
+            throw new BusinessException(BusinessException.Message.MODIFY_PERMISSION_FAIL);
         }
     }
 
     @Override
-    public void remove(RemovePermissionRequest removePermissionRequest) {
-        if (this.notExistsById(removePermissionRequest.getPermissionId())) {
-            throw new BusinessException("该权限不存在");
+    @Transactional(rollbackFor = Exception.class)
+    public void remove(RemovePermissionRequest request) {
+        Permission permission = this.getById(request.getId());
+
+        if (Objects.isNull(permission)) {
+            throw new BusinessException(BusinessException.Message.PERMISSION_NOT_EXISTS);
         }
 
-        if (!this.removeById(removePermissionRequest.getPermissionId())) {
-            throw new BusinessException("删除权限失败");
+        if (Objects.equals(permission.getBasic(), BasicConstant.TRUE)) {
+            throw new BusinessException(BusinessException.Message.PERMISSION_CANNOT_REMOVE);
         }
 
-        this.rolePermissionService.removeByPermissionId(removePermissionRequest.getPermissionId());
+        if (!this.removeById(request.getId())) {
+            throw new BusinessException(BusinessException.Message.REMOVE_PERMISSION_FAIL);
+        }
+
+        this.rolePermissionService.removeByPermissionId(request.getId());
     }
 
 }
