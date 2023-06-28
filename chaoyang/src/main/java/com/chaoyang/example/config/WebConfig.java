@@ -7,14 +7,14 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * 拦截器配置
+ * Web配置
  *
  * @author 韩朝阳
  * @since 2023/4/23
  */
 @Configuration
 @RequiredArgsConstructor
-public class InterceptorConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
 
