@@ -9,18 +9,12 @@ package com.chaoyang.example.constant;
 public class RedisKeyConstant {
 
     /**
-     * 登录信息
-     */
-    @Deprecated
-    public static final String LOGIN_INFO = "login-info:%s";
-
-    /**
      * Tokens（变量为用户ID）
      */
     public static final String TOKENS = "tokens:%d";
 
     /**
-     * 用户ID（变量为token）
+     * 用户ID（变量为Token）
      */
     public static final String USER_ID = "user-id:%s";
 
@@ -30,18 +24,8 @@ public class RedisKeyConstant {
     public static final String CAPTCHA = "captcha:%s";
 
     /**
-     * 用户（变量为用户ID）
+     * 登录信息（变量为用户ID）
      */
-    public static final String USER = "user:%d";
-
-    /**
-     * 角色集合（变量为用户ID）
-     */
-    public static final String ROLES = "roles:%d";
-
-    /**
-     * 权限集合（变量为用户ID）
-     */
-    public static final String PERMISSIONS = "permissions:%d";
+    public static final String LOGIN_INFO = "login-info:%s";
 
 }
