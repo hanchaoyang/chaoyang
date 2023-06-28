@@ -26,10 +26,8 @@ public class LoginController {
     private final LoginService loginService;
 
     @GetMapping("/captcha")
-    public Result<Void> getCaptcha(@Valid GetCaptchaRequest request, HttpServletResponse httpResponse) {
+    public void getCaptcha(@Valid GetCaptchaRequest request, HttpServletResponse httpResponse) {
         this.loginService.getCaptcha(request, httpResponse);
-
-        return Result.success();
     }
 
     @PostMapping("/login")

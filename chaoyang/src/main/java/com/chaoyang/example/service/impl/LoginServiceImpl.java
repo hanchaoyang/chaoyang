@@ -53,7 +53,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public void getCaptcha(GetCaptchaRequest request, HttpServletResponse httpResponse) {
-        ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(130, 40, 4, 4);
+        ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(130, 40, 4, 0);
 
         this.redisService.setCaptcha(request.getNonce(), captcha.getCode(), Duration.ofMinutes(1L));
 
