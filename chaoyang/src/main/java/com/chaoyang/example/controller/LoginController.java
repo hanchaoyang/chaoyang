@@ -1,5 +1,6 @@
 package com.chaoyang.example.controller;
 
+import com.chaoyang.example.annotation.RequiredLogin;
 import com.chaoyang.example.entity.dto.Result;
 import com.chaoyang.example.entity.dto.request.GetCaptchaRequest;
 import com.chaoyang.example.entity.dto.request.LoginRequest;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 /**
  * 登录控制层
@@ -24,31 +26,33 @@ public class LoginController {
     private final LoginService loginService;
 
     @GetMapping("/captcha")
-    public Result<Void> getCaptcha(GetCaptchaRequest getCaptchaRequest, HttpServletResponse httpServletResponse) {
-        this.loginService.getCaptcha(getCaptchaRequest, httpServletResponse);
+    public Result<Void> getCaptcha(@Valid GetCaptchaRequest request, HttpServletResponse httpResponse) {
+        this.loginService.getCaptcha(request, httpResponse);
 
         return Result.success();
     }
 
     @PostMapping("/login")
-    public Result<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        LoginResponse loginResponse = this.loginService.login(loginRequest);
+    public Result<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+        LoginResponse response = this.loginService.login(request);
 
-        return Result.success(loginResponse);
+        return Result.success(response);
     }
 
     @PostMapping("/logout")
-    public Result<Void> logout(@RequestHeader("Authorization") String token) {
-        this.loginService.logout(token);
+    @RequiredLogin
+    public Result<Void> logout() {
+        this.loginService.logout();
 
         return Result.success();
     }
 
     @GetMapping("/login-info")
-    public Result<LoginInfoResponse> getLoginInfo(@RequestHeader("Authorization") String token) {
-        LoginInfoResponse loginInfoResponse = this.loginService.getLoginInfo(token);
+    @RequiredLogin
+    public Result<LoginInfoResponse> getLoginInfo() {
+        LoginInfoResponse response = this.loginService.getLoginInfo();
 
-        return Result.success(loginInfoResponse);
+        return Result.success(response);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.chaoyang.example.service.impl;
 
-import com.alibaba.fastjson2.JSONObject;
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.ShearCaptcha;
+import cn.hutool.core.util.IdUtil;
 import com.chaoyang.example.constant.UserStatusConstant;
 import com.chaoyang.example.entity.dto.LoginInfo;
 import com.chaoyang.example.entity.dto.request.GetCaptchaRequest;
@@ -8,20 +10,20 @@ import com.chaoyang.example.entity.dto.request.LoginRequest;
 import com.chaoyang.example.entity.dto.response.LoginInfoResponse;
 import com.chaoyang.example.entity.dto.response.LoginResponse;
 import com.chaoyang.example.entity.po.*;
-import com.chaoyang.example.exception.AuthException;
+import com.chaoyang.example.exception.AuthenticationException;
 import com.chaoyang.example.exception.ParameterException;
 import com.chaoyang.example.service.*;
-import com.wf.captcha.ArithmeticCaptcha;
+import com.chaoyang.example.util.LoginUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -30,15 +32,14 @@ import java.util.stream.Collectors;
  * @author 韩朝阳
  * @since 2023/3/19
  */
-
-/**
- * 判断redis调用是否成功，否则会出现像假token请求退出接口返回成功的情况
- */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginServiceImpl implements LoginService {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final LoginUtil loginUtil;
+
+    private final RedisService redisService;
 
     private final UserService userService;
 
@@ -51,110 +52,146 @@ public class LoginServiceImpl implements LoginService {
     private final PermissionService permissionService;
 
     @Override
-    public void getCaptcha(GetCaptchaRequest getCaptchaRequest, HttpServletResponse httpServletResponse) {
-        ArithmeticCaptcha captcha = new ArithmeticCaptcha(120, 36, 2);
+    public void getCaptcha(GetCaptchaRequest request, HttpServletResponse httpResponse) {
+        ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(130, 40, 4, 4);
 
-        String captchaText = captcha.text();
-
-        this.redisTemplate.opsForValue().set(String.format("chaoyang:captcha:%s", getCaptchaRequest.getNonce()), captchaText, Duration.ofMinutes(1L));
+        this.redisService.setCaptcha(request.getNonce(), captcha.getCode(), Duration.ofMinutes(1L));
 
         try {
-            captcha.out(httpServletResponse.getOutputStream());
+            captcha.write(httpResponse.getOutputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * TODO 重复登录问题
-     */
     @Override
-    public LoginResponse login(LoginRequest loginRequest) {
-//        String key = String.format("chaoyang:qrcode:%s", loginRequest.getNonce());
-//
-//        String qrcode = this.redisTemplate.opsForValue().get(key);
-//
-//        if (Objects.equals(loginRequest.getQrcode(), qrcode)) {
-//            this.redisTemplate.delete(key);
-//        } else {
-//            throw new BusinessException("验证码错误");
-//        }
+    public LoginResponse login(LoginRequest request) {
+        /*
+         * 验证验证码
+         */
+        String nonce = request.getNonce();
 
-        User user = this.userService.findByPhoneAndPassword(loginRequest.getUserPhone(), loginRequest.getUserPassword());
+        String realCaptcha = this.redisService.getCaptcha(nonce);
+
+        if (Objects.isNull(realCaptcha)) {
+            throw new AuthenticationException(AuthenticationException.Message.CAPTCHA_ERROR);
+        }
+
+        if (Objects.equals(request.getCaptcha(), realCaptcha)) {
+            this.redisService.deleteCaptcha(nonce);
+        } else {
+            throw new AuthenticationException(AuthenticationException.Message.CAPTCHA_ERROR);
+        }
+
+        /*
+         * 验证用户账号、密码、状态
+         */
+        User user = this.userService.findByAccountAndPassword(request.getAccount(), request.getPassword());
 
         if (Objects.isNull(user)) {
-            throw new AuthException("用户不存在或密码错误");
+            throw new AuthenticationException(AuthenticationException.Message.USER_NOT_EXISTS_OR_PASSWORD_ERROR);
         }
 
         if (Objects.equals(user.getStatus(), UserStatusConstant.DISABLE)) {
-            throw new AuthException("用户已禁用");
+            throw new AuthenticationException(AuthenticationException.Message.USER_DISABLED);
         }
 
-        LoginInfo loginInfo = new LoginInfo();
+        /*
+         * 生成Token和过期时间
+         */
+        String token = IdUtil.simpleUUID();
 
-        loginInfo.setUserId(user.getId());
-        loginInfo.setUserNickname(user.getNickname());
-        loginInfo.setUserPhone(user.getPhone());
+        Duration expire = Duration.ofDays(30);
 
-        List<UserRole> userRoles = this.userRoleService.findByUserId(user.getId());
+        Long userId = user.getId();
 
-        if (!userRoles.isEmpty()) {
-            List<Long> roleIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList());
+        /*
+         * 踢掉前面的登录
+         */
+        LinkedList<String> tokens = (LinkedList<String>) this.redisService.getTokens(userId);
 
-            List<Role> roles = this.roleService.findByIds(roleIds);
-
-            loginInfo.setUserRoles(roles.stream().map(Role::getCode).collect(Collectors.toSet()));
-
-            List<RolePermission> rolePermissions = this.rolePermissionService.findByRoleIds(roleIds);
-
-            if (!rolePermissions.isEmpty()) {
-                List<Long> permissionIds = rolePermissions.stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
-
-                List<Permission> permissions = this.permissionService.findByIds(permissionIds);
-
-                loginInfo.setUserPermissions(permissions.stream().map(Permission::getCode).collect(Collectors.toSet()));
+        if (Objects.isNull(tokens)) {
+            tokens = new LinkedList<>();
+        } else {
+            // 这个值表示允许一个用户同时在几处登录，如果为1，则不允许同时登录
+            if (tokens.size() >= 1) {
+                this.redisService.deleteUserId(tokens.removeFirst());
             }
         }
 
-        String token = UUID.randomUUID().toString();
+        tokens.add(token);
 
-        this.redisTemplate.opsForValue().set(String.format("chaoyang:login-info:%s", token), JSONObject.toJSONString(loginInfo), Duration.ofDays(7L));
+        this.redisService.setTokens(userId, tokens, expire);
 
-        LoginResponse loginResponse = new LoginResponse();
+        /*
+         * 缓存用户ID
+         */
+        this.redisService.setUserId(token, userId, expire);
 
-        loginResponse.setToken(token);
+        /*
+         * 缓存登录信息（用户、角色、权限）
+         */
+        LoginInfo loginInfo = new LoginInfo();
 
-        return loginResponse;
+        loginInfo.setUserId(user.getId());
+        loginInfo.setNickname(user.getNickname());
+        loginInfo.setAccount(user.getAccount());
+
+        List<UserRole> userRoles = this.userRoleService.findByUserId(userId);
+
+        if (!userRoles.isEmpty()) {
+            List<Role> roles = this.roleService.findByIds(userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList()));
+
+            loginInfo.setRoles(roles.stream().map(Role::getCode).collect(Collectors.toSet()));
+
+            List<RolePermission> rolePermissions = this.rolePermissionService.findByRoleIds(roles.stream().map(Role::getId).collect(Collectors.toList()));
+
+            if (!rolePermissions.isEmpty()) {
+                List<Permission> permissions = this.permissionService.findByIds(rolePermissions.stream().map(RolePermission::getPermissionId).collect(Collectors.toList()));
+
+                loginInfo.setPermissions(permissions.stream().map(Permission::getCode).collect(Collectors.toSet()));
+            }
+        }
+
+        this.redisService.setLoginInfo(userId, loginInfo, expire);
+
+        // 返回Token
+        return LoginResponse.builder()
+                .token(token)
+                .build();
     }
 
     @Override
-    public void logout(String token) {
-        if (Objects.isNull(token) || token.isEmpty()) {
-            throw new ParameterException("参数错误");
+    public void logout() {
+        String currentToken = this.loginUtil.getToken();
+
+        if (Objects.isNull(currentToken)) {
+            throw new ParameterException(ParameterException.Message.NO_TOKEN);
         }
 
-        this.redisTemplate.delete(String.format("chaoyang:login-info:%s", token));
+        Long userId = this.redisService.getUserId(currentToken);
+
+        if (Objects.isNull(userId)) {
+            throw new AuthenticationException(AuthenticationException.Message.NOT_LOGIN);
+        }
+
+        this.redisService.deleteUserId(currentToken);
+
+        List<String> tokens = this.redisService.getTokens(userId);
+
+        tokens = tokens.stream().filter(token -> !Objects.equals(token, currentToken)).collect(Collectors.toList());
+
+        if (tokens.isEmpty()) {
+            this.redisService.deleteTokens(userId);
+            this.redisService.deleteLoginInfo(userId);
+        } else {
+            this.redisService.setTokens(userId, tokens);
+        }
     }
 
     @Override
-    public LoginInfoResponse getLoginInfo(String token) {
-        String loginInfoStr = this.redisTemplate.opsForValue().get(String.format("chaoyang:login-info:%s", token));
-
-        if (Objects.isNull(loginInfoStr)) {
-            throw new AuthException("未登录");
-        }
-
-        LoginInfo loginInfo = JSONObject.parseObject(loginInfoStr, LoginInfo.class);
-
-        LoginInfoResponse loginInfoResponse = new LoginInfoResponse();
-
-        loginInfoResponse.setUserId(loginInfo.getUserId());
-        loginInfoResponse.setUserNickname(loginInfo.getUserNickname());
-        loginInfoResponse.setUserPhone(loginInfo.getUserPhone());
-        loginInfoResponse.setUserRoles(loginInfo.getUserRoles());
-        loginInfoResponse.setUserPermissions(loginInfo.getUserPermissions());
-
-        return loginInfoResponse;
+    public LoginInfoResponse getLoginInfo() {
+        return LoginInfoResponse.of(this.loginUtil.getLoginInfo());
     }
 
 }

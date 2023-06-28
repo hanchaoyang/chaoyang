@@ -13,14 +13,29 @@ import java.util.Set;
 @Data
 public class LoginInfo {
 
+    /**
+     * 用户ID
+     */
     private Long userId;
 
-    private String userNickname;
+    /**
+     * 用户昵称
+     */
+    private String nickname;
 
-    private String userPhone;
+    /**
+     * 用户账号
+     */
+    private String account;
 
-    private Set<String> userRoles;
+    /**
+     * 用户角色集合
+     */
+    private Set<String> roles;
 
-    private Set<String> userPermissions;
+    /**
+     * 用户权限集合
+     */
+    private Set<String> permissions;
 
 }
