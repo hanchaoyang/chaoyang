@@ -67,12 +67,12 @@
         <appender-ref ref="FILE"/>
     </logger>
     <!-- 全局的级别 -->
-    <springProfile name="dev | private">
+    <springProfile name="dev | test | demo | pro">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
-    <springProfile name="test | pro">
+    <springProfile name="dev | test | demo | pro">
         <root level="INFO">
             <appender-ref ref="FILE"/>
         </root>
