@@ -16,7 +16,8 @@ import java.util.Collections;
  * @since 2023/3/16
  */
 @Configuration
-//@ConditionalOnProperty(prefix = "spring.profiles", name = "active", havingValue = "private ")
+// TODO 待测试
+//@ConditionalOnProperty(prefix = "spring.profiles", name = "active", havingValue = "dev | test | demo")
 public class CorsConfig {
 
     @Bean
