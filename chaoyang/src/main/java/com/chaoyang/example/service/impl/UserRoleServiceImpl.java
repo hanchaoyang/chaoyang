@@ -63,6 +63,15 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
     }
 
     @Override
+    public UserRole findByUserIdAndRoleId(Long userId, Long roleId) {
+        LambdaQueryWrapper<UserRole> queryWrapper = new LambdaQueryWrapper<UserRole>()
+                .eq(UserRole::getUserId, userId)
+                .eq(UserRole::getRoleId, roleId);
+
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
     public Page<UserRoleResponse> findPage(FindUserRolePageRequest request) {
         Page<UserRole> page = new Page<>(request.getCurrent(), request.getSize());
 
@@ -111,7 +120,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
 
     @Override
     public void remove(RemoveUserRoleRequest request) {
-        UserRole userRole = this.getById(request.getId());
+        UserRole userRole = this.findByUserIdAndRoleId(request.getUserId(), request.getRoleId());
 
         if (Objects.isNull(userRole)) {
             throw new BusinessException(BusinessException.Message.USER_ROLE_NOT_EXISTS);
@@ -121,7 +130,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
             throw new BusinessException(BusinessException.Message.USER_ROLE_CANNOT_REMOVE);
         }
 
-        if (!this.removeById(request.getId())) {
+        if (!this.removeById(userRole.getId())) {
             throw new BusinessException(BusinessException.Message.REMOVE_USER_ROLE_FAIL);
         }
     }
