@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ public class LoginServiceImpl implements LoginService {
     public void getCaptcha(GetCaptchaRequest request, HttpServletResponse httpResponse) {
         ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(130, 40, 4, 0);
 
-        this.redisService.setCaptcha(request.getNonce(), captcha.getCode(), Duration.ofMinutes(1L));
+        this.redisService.setCaptcha(request.getNonce(), captcha.getCode().toLowerCase(Locale.ROOT), Duration.ofMinutes(1L));
 
         try {
             captcha.write(httpResponse.getOutputStream());
@@ -71,7 +72,7 @@ public class LoginServiceImpl implements LoginService {
          */
         String nonce = request.getNonce();
 
-        String realCaptcha = this.redisService.getCaptcha(nonce);
+        String realCaptcha = this.redisService.getCaptcha(nonce.toLowerCase(Locale.ROOT));
 
         if (Objects.isNull(realCaptcha)) {
             throw new AuthenticationException(AuthenticationException.Message.CAPTCHA_ERROR);
