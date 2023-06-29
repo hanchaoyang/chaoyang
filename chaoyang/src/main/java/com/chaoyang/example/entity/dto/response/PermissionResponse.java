@@ -47,6 +47,7 @@ public class PermissionResponse {
                 .id(permission.getId())
                 .name(permission.getName())
                 .code(permission.getCode())
+                .basic(permission.getBasic())
                 .build();
     }
 

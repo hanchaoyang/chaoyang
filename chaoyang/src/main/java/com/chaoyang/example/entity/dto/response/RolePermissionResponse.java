@@ -72,6 +72,7 @@ public class RolePermissionResponse {
                 .id(rolePermission.getId())
                 .roleId(rolePermission.getRoleId())
                 .permissionId(rolePermission.getPermissionId())
+                .basic(rolePermission.getBasic())
                 .build();
 
         if (Objects.nonNull(roleMap)) {

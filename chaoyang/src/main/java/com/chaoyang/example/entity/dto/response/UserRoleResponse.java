@@ -62,6 +62,7 @@ public class UserRoleResponse {
                 .id(userRole.getId())
                 .userId(userRole.getUserId())
                 .roleId(userRole.getRoleId())
+                .basic(userRole.getBasic())
                 .build();
 
         if (Objects.nonNull(userMap)) {

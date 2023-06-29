@@ -47,6 +47,7 @@ public class RoleResponse {
                 .id(role.getId())
                 .name(role.getName())
                 .code(role.getCode())
+                .basic(role.getBasic())
                 .build();
     }
 
