@@ -24,6 +24,11 @@ public interface RolePermissionService extends IService<RolePermission> {
     boolean existsByRoleIdAndPermissionId(Long roleId, Long permissionId);
 
     /**
+     * 根据角色ID和权限ID查询角色权限关联
+     */
+    RolePermission findByRoleIdAndPermissionId(Long roleId, Long permissionId);
+
+    /**
      * 根据角色ID查询角色权限关联
      */
     List<RolePermission> findByRoleId(Long roleId);

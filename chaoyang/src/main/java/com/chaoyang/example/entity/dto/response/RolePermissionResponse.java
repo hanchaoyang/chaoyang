@@ -23,11 +23,6 @@ import java.util.Objects;
 public class RolePermissionResponse {
 
     /**
-     * 角色权限关联ID
-     */
-    private Long id;
-
-    /**
      * 角色ID
      */
     private Long roleId;
@@ -69,7 +64,6 @@ public class RolePermissionResponse {
      */
     public static RolePermissionResponse of(RolePermission rolePermission, Map<Long, Role> roleMap, Map<Long, Permission> permissionMap) {
         RolePermissionResponse response = RolePermissionResponse.builder()
-                .id(rolePermission.getId())
                 .roleId(rolePermission.getRoleId())
                 .permissionId(rolePermission.getPermissionId())
                 .basic(rolePermission.getBasic())

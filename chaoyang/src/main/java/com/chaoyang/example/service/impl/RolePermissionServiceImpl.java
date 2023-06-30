@@ -59,6 +59,15 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     }
 
     @Override
+    public RolePermission findByRoleIdAndPermissionId(Long roleId, Long permissionId) {
+        LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<RolePermission>()
+                .eq(RolePermission::getRoleId, roleId)
+                .eq(RolePermission::getPermissionId, permissionId);
+
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
     public List<RolePermission> findByRoleId(Long roleId) {
         return this.list(new LambdaQueryWrapper<RolePermission>().eq(RolePermission::getRoleId, roleId));
     }
@@ -121,7 +130,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
 
     @Override
     public void remove(RemoveRolePermissionRequest request) {
-        RolePermission rolePermission = this.getById(request.getId());
+        RolePermission rolePermission = this.findByRoleIdAndPermissionId(request.getRoleId(), request.getPermissionId());
 
         if (Objects.isNull(rolePermission)) {
             throw new BusinessException(BusinessException.Message.ROLE_PERMISSION_NOT_EXISTS);
@@ -131,7 +140,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
             throw new BusinessException(BusinessException.Message.ROLE_PERMISSION_CANNOT_REMOVE);
         }
 
-        if (!this.removeById(request.getId())) {
+        if (!this.removeById(rolePermission.getId())) {
             throw new BusinessException(BusinessException.Message.REMOVE_ROLE_PERMISSION_FAIL);
         }
     }

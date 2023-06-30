@@ -23,11 +23,6 @@ import java.util.Objects;
 public class UserRoleResponse {
 
     /**
-     * 用户角色关联ID
-     */
-    private Long id;
-
-    /**
      * 用户ID
      */
     private Long userId;
@@ -59,7 +54,6 @@ public class UserRoleResponse {
      */
     public static UserRoleResponse of(UserRole userRole, Map<Long, User> userMap, Map<Long, Role> roleMap) {
         UserRoleResponse response = UserRoleResponse.builder()
-                .id(userRole.getId())
                 .userId(userRole.getUserId())
                 .roleId(userRole.getRoleId())
                 .basic(userRole.getBasic())

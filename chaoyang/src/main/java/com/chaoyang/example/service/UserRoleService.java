@@ -24,14 +24,14 @@ public interface UserRoleService extends IService<UserRole> {
     boolean existsByUserIdAndRoleId(Long userId, Long roleId);
 
     /**
-     * 根据用户ID查询用户角色关联
-     */
-    List<UserRole> findByUserId(Long userId);
-
-    /**
      * 根据用户ID和角色ID查询用户角色关联
      */
     UserRole findByUserIdAndRoleId(Long userId, Long roleId);
+
+    /**
+     * 根据用户ID查询用户角色关联
+     */
+    List<UserRole> findByUserId(Long userId);
 
     /**
      * 根据用户ID分页查询用户角色关联

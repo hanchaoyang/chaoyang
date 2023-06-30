@@ -14,9 +14,15 @@ import javax.validation.constraints.NotNull;
 public class RemoveRolePermissionRequest {
 
     /**
-     * 角色权限关联ID
+     * 角色ID
      */
-    @NotNull(message = "角色权限关联ID不能为空")
-    private Long id;
+    @NotNull(message = "角色ID不能为空")
+    private Long roleId;
+
+    /**
+     * 权限ID
+     */
+    @NotNull(message = "权限ID不能为空")
+    private Long permissionId;
 
 }
