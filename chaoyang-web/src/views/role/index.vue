@@ -3,20 +3,20 @@
     <div>
       <el-button type="success" size="medium" @click="openCreateDialog()">添加</el-button>
       <el-divider direction="vertical"></el-divider>
-      <el-input v-model="condition.roleName" placeholder="角色名称" size="medium" :clearable="true" style="width: 200px"></el-input>
-      <el-input v-model="condition.roleCode" placeholder="角色标识" size="medium" :clearable="true" style="width: 200px;margin-left: 10px"></el-input>
+      <el-input v-model="condition.name" placeholder="名称" size="medium" :clearable="true" style="width: 200px"></el-input>
+      <el-input v-model="condition.code" placeholder="标识" size="medium" :clearable="true" style="width: 200px;margin-left: 10px"></el-input>
       <el-button type="primary" size="medium" style="margin-left: 10px" @click="search()">查询</el-button>
       <el-button size="medium" style="margin-left: 10px" @click="reset()">重置</el-button>
     </div>
     <el-table :data="roles" size="medium" empty-text="暂无数据" border stripe style="margin-top: 20px">
       <el-table-column type="index" width="100" label="#"></el-table-column>
-      <el-table-column prop="roleName" label="角色名称" min-width="100"></el-table-column>
-      <el-table-column prop="roleCode" label="角色标识" min-width="100"></el-table-column>
+      <el-table-column prop="name" label="名称" min-width="100"></el-table-column>
+      <el-table-column prop="code" label="标识" min-width="100"></el-table-column>
       <el-table-column fixed="right" label="操作" width="300">
         <template slot-scope="scope">
           <el-button type="primary" size="medium" @click="openModifyDialog(scope.row)">编辑</el-button>
           <el-button type="success" size="medium" @click="openRolePermissionDialog(scope.row)">权限</el-button>
-          <el-button type="danger" size="medium" @click="remove(scope.row)">删除</el-button>
+          <el-button type="danger" size="medium" :disabled="scope.row.basic === 1" @click="remove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -43,8 +43,8 @@ export default {
   data() {
     return {
       condition: {
-        roleName: null,
-        roleCode: null
+        name: null,
+        code: null
       },
       roles: [],
       page: {
@@ -71,8 +71,8 @@ export default {
       this.getPage()
     },
     reset: function () {
-      this.condition.roleName = null
-      this.condition.roleCode = null
+      this.condition.name = null
+      this.condition.code = null
       this.getPage()
     },
     currentChange: function () {
@@ -80,8 +80,8 @@ export default {
     },
     getPage: function () {
       const params = {
-        roleName: this.condition.roleName,
-        roleCode: this.condition.roleCode,
+        name: this.condition.name,
+        code: this.condition.code,
         current: this.page.current,
         size: this.page.size
       }
@@ -99,11 +99,11 @@ export default {
       this.$refs.CreateDialog.setVisible(true)
     },
     openModifyDialog: function (role) {
-      this.dialog.modify.roleId = role.roleId
+      this.dialog.modify.roleId = role.id
       this.$refs.ModifyDialog.setVisible(true)
     },
     openRolePermissionDialog: function (role) {
-      this.dialog.rolePermission.roleId = role.roleId
+      this.dialog.rolePermission.roleId = role.id
       this.$refs.RolePermissionDialog.setVisible(true);
     },
     remove: function (role) {
@@ -113,7 +113,7 @@ export default {
         type: 'warning'
       }).then(() => {
         const params = {
-          roleId: role.roleId
+          roleId: role.id
         }
         remove(params).then(result => {
           const {code, message} = result

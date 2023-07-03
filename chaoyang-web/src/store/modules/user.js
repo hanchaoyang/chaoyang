@@ -30,9 +30,9 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, loginForm) {
-    const { phone, password, nonce, captcha } = loginForm
+    const { account, password, nonce, captcha } = loginForm
     return new Promise((resolve, reject) => {
-      login({ userPhone: phone, userPassword: password, nonce: nonce, captcha: captcha }).then(result => {
+      login({ account: account, password: password, nonce: nonce, captcha: captcha }).then(result => {
         const { data } = result
         commit('SET_TOKEN', data.token)
         setToken(data.token)

@@ -3,7 +3,7 @@
     <el-form ref="form" :model="form" :rules="rules" class="form">
       <div class="title">后台管理系统</div>
       <el-form-item prop="phone">
-        <el-input type="text" v-model="form.phone" prefix-icon="el-icon-user" placeholder="账号"></el-input>
+        <el-input type="text" v-model="form.account" prefix-icon="el-icon-user" placeholder="账号"></el-input>
       </el-form-item>
       <el-form-item prop="password">
         <el-input type="password" v-model="form.password" prefix-icon="el-icon-key" show-password placeholder="密码"></el-input>
@@ -33,12 +33,12 @@ export default {
       captchaUrl: null,
       form: {
         nonce: null,
-        phone: '18888888888',
+        account: 'admin',
         password: '123456',
         captcha: null
       },
       rules: {
-        phone: [
+        account: [
           { required: true, message: '请输入账号', trigger: 'blur' },
           { min: 1, max: 20, message: '账号长度为1-32个字符', trigger: 'blur' }
         ],
@@ -95,7 +95,7 @@ export default {
 .container {
   width: 100%;
   min-height: 100%;
-  background-color: #1F2d3d;
+  background-color: #111827;
 }
 
 .form {
@@ -116,8 +116,8 @@ export default {
 }
 
 /deep/ .el-input__inner {
-  background-color: #1f2d3d !important;
-  border: 1px solid #3f4757;
+  background-color: #1D2432 !important;
+  border: 1px solid #343A47;
   color: #FFFFFF;
 }
 

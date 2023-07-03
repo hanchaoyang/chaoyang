@@ -4,7 +4,7 @@
       <div>
         <el-button type="success" size="medium" @click="openInactiveRoleDialog()">添加</el-button>
       </div>
-      <el-table :data="userRoles" size="medium" empty-text="暂无数据" border stripe style="margin-top: 20px">
+      <el-table :data="userRoles" size="medium" empty-text="暂无数据" style="margin-top: 20px">
         <el-table-column type="index" width="100" label="#"></el-table-column>
         <el-table-column prop="roleName" label="角色名称" min-width="100"></el-table-column>
         <el-table-column prop="roleCode" label="角色标识" min-width="100"></el-table-column>
@@ -94,7 +94,8 @@ export default {
     },
     remove: function (userRole) {
       const params = {
-        userRoleId: userRole.userRoleId
+        userId: userRole.userId,
+        roleId: userRole.roleId
       }
       remove(params).then(result => {
         const {code, message} = result

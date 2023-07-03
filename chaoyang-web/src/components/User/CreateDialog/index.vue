@@ -1,22 +1,19 @@
 <template>
-  <el-dialog title="添加" :visible.sync="visible" width="40%" @open="open()" @close="close()">
-    <el-form ref="CreateDialogForm" :model="user" :rules="rules" size="medium" label-width="100px">
-      <el-form-item label="用户昵称" prop="userNickname">
-        <el-input v-model="user.userNickname" style="width: 320px"></el-input>
+  <el-dialog title="添加" :visible.sync="visible" width="500px" @open="open()" @close="close()">
+    <el-form ref="CreateDialogForm" :model="user" :rules="rules" size="medium" label-width="78px">
+      <el-form-item label="昵称" prop="nickname">
+        <el-input v-model="user.nickname" placeholder="请输入昵称" style="width: 320px"></el-input>
       </el-form-item>
-      <el-form-item label="用户手机号" prop="userPhone">
-        <el-input v-model="user.userPhone" style="width: 320px"></el-input>
+      <el-form-item label="账号" prop="account">
+        <el-input v-model="user.account" placeholder="请输入账号" style="width: 320px"></el-input>
       </el-form-item>
-      <el-form-item label="用户密码" prop="userPassword">
-        <el-input v-model="user.userPassword" show-password style="width: 320px"></el-input>
+      <el-form-item label="密码" prop="password">
+        <el-input v-model="user.password" placeholder="请输入密码" show-password style="width: 320px"></el-input>
       </el-form-item>
-      <el-form-item label="确认密码" prop="confirmPassword">
-        <el-input v-model="user.confirmPassword" show-password style="width: 320px"></el-input>
-      </el-form-item>
-      <el-form-item label="用户状态" prop="userStatus">
-        <el-radio-group v-model="user.userStatus">
-          <el-radio label="0">禁用</el-radio>
-          <el-radio label="1">启用</el-radio>
+      <el-form-item label="状态" prop="status">
+        <el-radio-group v-model="user.status">
+          <el-radio :label="1">启用</el-radio>
+          <el-radio :label="0">禁用</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item>
@@ -24,10 +21,6 @@
         <el-button @click="cancel()">取消</el-button>
       </el-form-item>
     </el-form>
-<!--    <div slot="footer">-->
-<!--      <el-button size="medium" @click="cancel()">取消</el-button>-->
-<!--      <el-button type="primary" size="medium" @click="done()">确定</el-button>-->
-<!--    </div>-->
   </el-dialog>
 </template>
 
@@ -40,31 +33,26 @@ export default {
     return {
       visible: false,
       user: {
-        userNickname: null,
-        userPhone: null,
-        userPassword: null,
-        confirmPassword: null,
-        userStatus: null
+        nickname: null,
+        account: null,
+        password: null,
+        status: 1
       },
       rules: {
-        userNickname: [
-          { required: true, message: '请输入用户昵称', trigger: 'blur' },
-          { min: 1, max: 20, message: '用户昵称长度为1-20个字符', trigger: 'blur' }
+        nickname: [
+          { required: true, message: '请输入昵称', trigger: 'blur' },
+          { min: 1, max: 20, message: '昵称长度为1-20个字符', trigger: 'blur' }
         ],
-        userPhone: [
-          { required: true, message: '请输入用户手机号', trigger: 'blur' },
-          { min: 11, max: 11, message: '用户昵称长度为11个字符', trigger: 'blur' }
+        account: [
+          { required: true, message: '请输入账号', trigger: 'blur' },
+          { min: 4, max: 40, message: '账号长度为4-40个字符', trigger: 'blur' }
         ],
-        userPassword: [
-          { required: true, message: '请输入用户密码', trigger: 'blur' },
-          { min: 6, max: 20, message: '用户昵称长度为6-20个字符', trigger: 'blur' }
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '密码长度为6-20个字符', trigger: 'blur' }
         ],
-        confirmPassword: [
-          { required: true, message: '请输入确认密码', trigger: 'blur' },
-          { min: 6, max: 20, message: '确认密码长度为6-20个字符', trigger: 'blur' }
-        ],
-        userStatus: [
-          { required: true, message: '请选择用户状态', trigger: 'blur' }
+        status: [
+          { required: true, message: '请选择状态', trigger: 'blur' }
         ]
       }
     }
@@ -77,28 +65,20 @@ export default {
 
     },
     close: function () {
-      this.user.userNickname = null
-      this.user.userPhone = null
-      this.user.userPassword = null
-      this.user.confirmPassword = null
-      this.user.userStatus = null
+      this.user.nickname = null
+      this.user.account = null
+      this.user.password = null
+      this.user.status = 1
       this.$refs.CreateDialogForm.resetFields();
     },
     create: function () {
       this.$refs.CreateDialogForm.validate(valid => {
         if (valid) {
-          if (this.user.userPassword !== this.user.confirmPassword) {
-            this.$message({
-              message: "两次密码输入不一致",
-              type: 'error'
-            })
-            return
-          }
           const data = {
-            userNickname: this.user.userNickname,
-            userPhone: this.user.userPhone,
-            userPassword: this.user.userPassword,
-            userStatus: this.user.userStatus
+            nickname: this.user.nickname,
+            account: this.user.account,
+            password: this.user.password,
+            status: this.user.status
           }
           create(data).then(result => {
             const {code, message} = result

@@ -1,21 +1,17 @@
 <template>
-  <el-dialog title="编辑" :visible.sync="visible" width="40%" @open="open()" @close="close()">
-    <el-form ref="CreateDialogForm" :model="role" :rules="rules" size="medium" label-width="100px">
-      <el-form-item label="角色名称" prop="roleName">
-        <el-input v-model="role.roleName" style="width: 320px"></el-input>
+  <el-dialog title="编辑" :visible.sync="visible" width="500px" @open="open()" @close="close()">
+    <el-form ref="CreateDialogForm" :model="role" :rules="rules" size="medium" label-width="78px">
+      <el-form-item label="名称" prop="name">
+        <el-input v-model="role.name" placeholder="请输入名称" style="width: 320px"></el-input>
       </el-form-item>
-      <el-form-item label="角色标识" prop="roleCode">
-        <el-input v-model="role.roleCode" style="width: 320px"></el-input>
+      <el-form-item label="标识" prop="code">
+        <el-input v-model="role.code" placeholder="请输入标识" style="width: 320px"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="modify()">保存</el-button>
         <el-button @click="cancel()">取消</el-button>
       </el-form-item>
     </el-form>
-<!--    <div slot="footer">-->
-<!--      <el-button size="medium" @click="cancel()">取消</el-button>-->
-<!--      <el-button type="primary" size="medium" @click="done()">确定</el-button>-->
-<!--    </div>-->
   </el-dialog>
 </template>
 
@@ -33,18 +29,18 @@ export default {
     return {
       visible: false,
       role: {
-        roleId: null,
-        roleName: null,
-        roleCode: null
+        id: null,
+        name: null,
+        code: null
       },
       rules: {
-        roleName: [
-          { required: true, message: '请输入角色名称', trigger: 'blur' },
-          { min: 1, max: 20, message: '角色名称长度为1-20个字符', trigger: 'blur' }
+        name: [
+          { required: true, message: '请输入名称', trigger: 'blur' },
+          { min: 1, max: 20, message: '名称长度为1-20个字符', trigger: 'blur' }
         ],
-        roleCode: [
-          { required: true, message: '请输入角色标识', trigger: 'blur' },
-          { min: 1, max: 40, message: '角色标识长度为1-40个字符', trigger: 'blur' }
+        code: [
+          { required: true, message: '请输入标识', trigger: 'blur' },
+          { min: 1, max: 40, message: '标识长度为1-40个字符', trigger: 'blur' }
         ]
       }
     }
@@ -57,30 +53,30 @@ export default {
       this.init()
     },
     close: function () {
-      this.role.roleId = null
-      this.role.roleName = null
-      this.role.roleCode = null
+      this.role.id = null
+      this.role.name = null
+      this.role.code = null
       this.$refs.CreateDialogForm.resetFields();
     },
     init: function () {
       const params = {
-        roleId: this.roleId
+        id: this.roleId
       }
       find(params).then(result => {
         const {data} = result
-        const {roleId, roleName, roleCode} = data
-        this.role.roleId = roleId
-        this.role.roleName = roleName
-        this.role.roleCode = roleCode
+        const {id, name, code} = data
+        this.role.id = id
+        this.role.name = name
+        this.role.code = code
       })
     },
     modify: function () {
       this.$refs.CreateDialogForm.validate(valid => {
         if (valid) {
           const data = {
-            roleId: this.role.roleId,
-            roleName: this.role.roleName,
-            roleCode: this.role.roleCode
+            id: this.role.id,
+            name: this.role.name,
+            code: this.role.code
           }
           modify(data).then(result => {
             const {code, message} = result

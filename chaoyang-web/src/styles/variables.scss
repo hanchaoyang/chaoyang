@@ -1,15 +1,15 @@
 // sidebar
-$menuText:#bfcbd9;
-$menuActiveText:#409EFF;
-$subMenuActiveText:#f4f4f5; //https://github.com/ElemeFE/element/issues/12951
-
-$menuBg:#304156;
-$menuHover:#263445;
-
-$subMenuBg:#1f2d3d;
-$subMenuHover:#001528;
-
-$sideBarWidth: 210px;
+//$menuText:#bfcbd9;
+//$menuActiveText:#409EFF;
+//$subMenuActiveText:#f4f4f5; //https://github.com/ElemeFE/element/issues/12951
+//
+//$menuBg:#304156;
+//$menuHover:#263445;
+//
+//$subMenuBg:#1f2d3d;
+//$subMenuHover:#001528;
+//
+//$sideBarWidth: 210px;
 // 以上是默认的配色
 
 // sidebar
@@ -24,6 +24,21 @@ $sideBarWidth: 210px;
 //$subMenuHover: #E6E6E6;
 //
 //$sideBarWidth: 210px;
+
+
+
+$menuText:#9CA3AF;
+$menuActiveText:#FFFFFF;
+$subMenuActiveText:#FFFFFF; //https://github.com/ElemeFE/element/issues/12951
+
+$menuBg:#111827;
+$menuHover:#1F2937;
+
+$subMenuBg:#111827;
+$subMenuHover:#1F2937;
+
+$sideBarWidth: 210px;
+
 
 
 // the :export directive is the magic sauce for webpack
