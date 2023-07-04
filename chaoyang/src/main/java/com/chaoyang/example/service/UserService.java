@@ -17,7 +17,7 @@ public interface UserService extends IService<User> {
     /**
      * 根据账号查询用户是否存在
      */
-    boolean existsByAccount(String account);
+    boolean existsByAccount(String account, Long id);
 
     /**
      * 根据ID查询用户是否不存在

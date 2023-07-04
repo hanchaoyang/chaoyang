@@ -41,8 +41,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final UserRoleService userRoleService;
 
     @Override
-    public boolean existsByAccount(String account) {
-        return this.count(new LambdaQueryWrapper<User>().eq(User::getAccount, account)) != 0;
+    public boolean existsByAccount(String account, Long id) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<User>()
+                .eq(User::getAccount, account)
+                .ne(Objects.nonNull(id), User::getId, id);
+
+        return this.count(queryWrapper) != 0;
     }
 
     @Override
@@ -99,7 +103,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void create(CreateUserRequest request) {
-        if (this.existsByAccount(request.getAccount())) {
+        if (this.existsByAccount(request.getAccount(), null)) {
             throw new BusinessException(BusinessException.Message.USER_EXISTS);
         }
 
@@ -119,11 +123,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void modify(ModifyUserRequest request) {
-        if (this.notExistsById(request.getId())) {
+        User user = this.getById(request.getId());
+
+        if (Objects.isNull(user)) {
             throw new BusinessException(BusinessException.Message.USER_NOT_EXISTS);
         }
 
-        User user = new User();
+        if (this.existsByAccount(request.getAccount(), user.getId())) {
+            throw new BusinessException(BusinessException.Message.USER_EXISTS);
+        }
 
         user.setId(request.getId());
         user.setNickname(request.getNickname());
