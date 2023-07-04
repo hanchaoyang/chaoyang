@@ -1,13 +1,13 @@
 <template>
   <div>
-    <el-dialog title="权限" :visible.sync="visible" width="50%" @open="open()" @close="close()">
+    <el-dialog title="权限" :visible.sync="visible" width="800px" @open="open()" @close="close()">
       <div>
         <el-button type="success" size="medium" @click="openInactivePermissionDialog()">添加</el-button>
       </div>
-      <el-table :data="rolePermissions" size="medium" empty-text="暂无数据" border stripe style="margin-top: 20px">
+      <el-table :data="rolePermissions" size="medium" border stripe style="margin-top: 20px">
         <el-table-column type="index" width="100" label="#"></el-table-column>
-        <el-table-column prop="permissionName" label="权限名称" min-width="100"></el-table-column>
-        <el-table-column prop="permissionCode" label="权限标识" min-width="100"></el-table-column>
+        <el-table-column prop="permissionName" label="名称" min-width="100"></el-table-column>
+        <el-table-column prop="permissionCode" label="标识" min-width="100"></el-table-column>
         <el-table-column fixed="right" label="操作" width="120">
           <template slot-scope="scope">
             <el-button type="danger" size="medium" @click="remove(scope.row)">删除</el-button>
@@ -15,10 +15,6 @@
         </el-table-column>
       </el-table>
       <el-pagination layout="prev, pager, next" :current-page.sync="page.current" :page-size="page.size" :total="page.total" background style="margin-top: 20px;" @current-change="currentChange()"></el-pagination>
-<!--      <div slot="footer">-->
-<!--        <el-button size="medium" @click="cancel()">取消</el-button>-->
-<!--        <el-button type="primary" size="medium" @click="done()">确定</el-button>-->
-<!--      </div>-->
     </el-dialog>
     <inactive-permission-dialog ref="InactivePermissionDialog" :role-id="dialog.inactivePermission.roleId" @close="getPage()"></inactive-permission-dialog>
   </div>
@@ -94,7 +90,8 @@ export default {
     },
     remove: function (rolePermission) {
       const params = {
-        rolePermissionId: rolePermission.rolePermissionId
+        roleId: rolePermission.roleId,
+        permissionId: rolePermission.permissionId
       }
       remove(params).then(result => {
         const {code, message} = result

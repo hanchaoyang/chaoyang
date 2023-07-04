@@ -3,15 +3,15 @@
     <div>
       <el-button type="success" size="medium" @click="openCreateDialog()">添加</el-button>
       <el-divider direction="vertical"></el-divider>
-      <el-input v-model="condition.permissionName" placeholder="权限名称" size="medium" :clearable="true" style="width: 200px"></el-input>
-      <el-input v-model="condition.permissionCode" placeholder="权限标识" size="medium" :clearable="true" style="width: 200px;margin-left: 10px"></el-input>
+      <el-input v-model="condition.name" placeholder="名称" size="medium" :clearable="true" style="width: 200px"></el-input>
+      <el-input v-model="condition.code" placeholder="标识" size="medium" :clearable="true" style="width: 200px;margin-left: 10px"></el-input>
       <el-button type="primary" size="medium" style="margin-left: 10px" @click="search()">查询</el-button>
       <el-button size="medium" style="margin-left: 10px" @click="reset()">重置</el-button>
     </div>
-    <el-table :data="permissions" size="medium" empty-text="暂无数据" border stripe style="margin-top: 20px">
+    <el-table :data="permissions" size="medium" border stripe style="margin-top: 20px">
       <el-table-column type="index" width="100" label="#"></el-table-column>
-      <el-table-column prop="permissionName" label="权限名称" min-width="100"></el-table-column>
-      <el-table-column prop="permissionCode" label="权限标识" min-width="100"></el-table-column>
+      <el-table-column prop="name" label="名称" min-width="100"></el-table-column>
+      <el-table-column prop="code" label="标识" min-width="100"></el-table-column>
       <el-table-column fixed="right" label="操作" width="220">
         <template slot-scope="scope">
           <el-button type="primary" size="medium" @click="openModifyDialog(scope.row)">编辑</el-button>
@@ -39,8 +39,8 @@ export default {
   data() {
     return {
       condition: {
-        permissionName: null,
-        permissionCode: null
+        name: null,
+        code: null
       },
       permissions: [],
       page: {
@@ -64,8 +64,8 @@ export default {
       this.getPage()
     },
     reset: function () {
-      this.condition.permissionName = null
-      this.condition.permissionCode = null
+      this.condition.name = null
+      this.condition.code = null
       this.getPage()
     },
     currentChange: function () {
@@ -73,8 +73,8 @@ export default {
     },
     getPage: function () {
       const params = {
-        permissionName: this.condition.permissionName,
-        permissionCode: this.condition.permissionCode,
+        name: this.condition.name,
+        code: this.condition.code,
         current: this.page.current,
         size: this.page.size
       }
@@ -92,7 +92,7 @@ export default {
       this.$refs.CreateDialog.setVisible(true)
     },
     openModifyDialog: function (permission) {
-      this.dialog.modify.permissionId = permission.permissionId
+      this.dialog.modify.permissionId = permission.id
       this.$refs.ModifyDialog.setVisible(true)
     },
     remove: function (permission) {
@@ -102,7 +102,7 @@ export default {
         type: 'warning'
       }).then(() => {
         const params = {
-          permissionId: permission.permissionId
+          id: permission.id
         }
         remove(params).then(result => {
           const {code, message} = result
