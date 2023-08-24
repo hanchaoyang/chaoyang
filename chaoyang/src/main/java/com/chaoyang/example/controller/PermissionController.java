@@ -39,6 +39,14 @@ public class PermissionController {
         return Result.success(page);
     }
 
+    @GetMapping("/permission/active/page")
+    @RequiredPermission(value = {"permission:find", "role:find"}, and = true)
+    public Result<Page<PermissionResponse>> findActivePage(@Valid FindActivePermissionPageRequest request) {
+        Page<PermissionResponse> page = this.permissionService.findActivePage(request);
+
+        return Result.success(page);
+    }
+
     @GetMapping("/permission/inactive/page")
     @RequiredPermission(value = {"permission:find", "role:find"}, and = true)
     public Result<Page<PermissionResponse>> findInactivePage(@Valid FindInactivePermissionPageRequest request) {

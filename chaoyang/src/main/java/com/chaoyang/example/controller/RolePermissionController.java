@@ -25,6 +25,7 @@ public class RolePermissionController {
 
     private final RolePermissionService rolePermissionService;
 
+    @Deprecated
     @GetMapping("/role-permission/page")
     @RequiredPermission(value = {"role:find", "permission:find"}, and = true)
     public Result<Page<RolePermissionResponse>> findPage(@Valid FindRolePermissionPageRequest request) {

@@ -58,6 +58,11 @@ public interface RoleService extends IService<Role> {
     void create(CreateRoleRequest request);
 
     /**
+     * 添加角色权限关联
+     */
+    void createRolePermission(CreateRolePermissionRequest request);
+
+    /**
      * 修改角色
      */
     void modify(ModifyRoleRequest request);

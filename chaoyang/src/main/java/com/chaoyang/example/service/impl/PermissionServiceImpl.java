@@ -13,6 +13,7 @@ import com.chaoyang.example.mapper.PermissionMapper;
 import com.chaoyang.example.service.PermissionService;
 import com.chaoyang.example.service.RolePermissionService;
 import com.chaoyang.example.util.LoginUtil;
+import com.chaoyang.example.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -103,6 +104,26 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         responsePage.setRecords(page.getRecords().stream().map(PermissionResponse::of).collect(Collectors.toList()));
 
         return responsePage;
+    }
+
+    @Override
+    public Page<PermissionResponse> findActivePage(FindActivePermissionPageRequest request) {
+        List<RolePermission> rolePermissions = this.rolePermissionService.findByRoleId(request.getRoleId());
+
+        if (rolePermissions.isEmpty()) {
+            return new Page<>();
+        }
+
+        Page<Permission> page = new Page<>(request.getCurrent(), request.getSize());
+
+        List<Long> ids = rolePermissions.stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
+
+        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<Permission>()
+                .in(Permission::getId, ids);
+
+        this.page(page, queryWrapper);
+
+        return PageUtil.convert(page, PermissionResponse::of);
     }
 
     @SuppressWarnings("Duplicates")

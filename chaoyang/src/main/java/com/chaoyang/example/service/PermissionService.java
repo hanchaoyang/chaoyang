@@ -48,6 +48,11 @@ public interface PermissionService extends IService<Permission> {
     Page<PermissionResponse> findPage(FindPermissionPageRequest request);
 
     /**
+     * 根据角色ID分页查询已关联的权限
+     */
+    Page<PermissionResponse> findActivePage(FindActivePermissionPageRequest request);
+
+    /**
      * 根据角色ID分页查询未关联的权限
      */
     Page<PermissionResponse> findInactivePage(FindInactivePermissionPageRequest request);

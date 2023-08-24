@@ -38,11 +38,11 @@ public class AsyncConfig {
     public Executor executor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
 
-        threadPoolTaskExecutor.setCorePoolSize(this.corePoolSize);
-        threadPoolTaskExecutor.setMaxPoolSize(this.maxPoolSize);
-        threadPoolTaskExecutor.setQueueCapacity(this.queueCapacity);
-        threadPoolTaskExecutor.setKeepAliveSeconds(this.keepAliveSeconds);
-        threadPoolTaskExecutor.setThreadNamePrefix(this.threadNamePrefix);
+        threadPoolTaskExecutor.setCorePoolSize(this.corePoolSize); // 10
+        threadPoolTaskExecutor.setMaxPoolSize(this.maxPoolSize); // 30
+        threadPoolTaskExecutor.setQueueCapacity(this.queueCapacity); // 100
+        threadPoolTaskExecutor.setKeepAliveSeconds(this.keepAliveSeconds); // 60
+        threadPoolTaskExecutor.setThreadNamePrefix(this.threadNamePrefix); // thread-
         threadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
         threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 
