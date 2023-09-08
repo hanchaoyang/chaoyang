@@ -6,13 +6,13 @@ import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.NotNull;
 
 /**
- * 分页查询用户角色关联请求类
+ * 分页查询用户已关联的角色请求类
  *
  * @author 韩朝阳
- * @since 2023/4/20
+ * @since 2023/9/8
  */
 @Data
-public class FindUserRolePageRequest {
+public class FindActiveRolePageRequest {
 
     /**
      * 用户ID

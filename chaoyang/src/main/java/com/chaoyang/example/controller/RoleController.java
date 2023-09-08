@@ -40,6 +40,14 @@ public class RoleController {
         return Result.success(page);
     }
 
+    @GetMapping("/role/active/page")
+    @RequiredPermission(value = {"role:find", "user:find"}, and = true)
+    public Result<Page<RoleResponse>> findActivePage(@Valid FindActiveRolePageRequest request) {
+        Page<RoleResponse> page = this.roleService.findActivePage(request);
+
+        return Result.success(page);
+    }
+
     @GetMapping("/role/inactive/page")
     @RequiredPermission(value = {"role:find", "user:find"}, and = true)
     public Result<Page<RoleResponse>> findInactivePage(@Valid FindInactiveRolePageRequest request) {

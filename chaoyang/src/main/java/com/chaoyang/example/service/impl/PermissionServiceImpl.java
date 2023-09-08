@@ -38,6 +38,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     private final RolePermissionService rolePermissionService;
 
+    private final PermissionMapper permissionMapper;
+
     @Override
     public boolean notExistsById(Long id) {
         return this.count(new LambdaQueryWrapper<Permission>().eq(Permission::getId, id)) == 0;
@@ -86,7 +88,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         return PermissionResponse.of(permission);
     }
 
-    @SuppressWarnings("Duplicates")
     @Override
     public Page<PermissionResponse> findPage(FindPermissionPageRequest request) {
         Page<Permission> page = new Page<>(request.getCurrent(), request.getSize());
@@ -108,45 +109,16 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Override
     public Page<PermissionResponse> findActivePage(FindActivePermissionPageRequest request) {
-        List<RolePermission> rolePermissions = this.rolePermissionService.findByRoleId(request.getRoleId());
-
-        if (rolePermissions.isEmpty()) {
-            return new Page<>();
-        }
-
-        Page<Permission> page = new Page<>(request.getCurrent(), request.getSize());
-
-        List<Long> ids = rolePermissions.stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
-
-        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<Permission>()
-                .in(Permission::getId, ids);
-
-        this.page(page, queryWrapper);
+        Page<Permission> page = this.permissionMapper.selectActivePage(request.getRoleId(), new Page<>(request.getCurrent(), request.getSize()));
 
         return PageUtil.convert(page, PermissionResponse::of);
     }
 
-    @SuppressWarnings("Duplicates")
     @Override
     public Page<PermissionResponse> findInactivePage(FindInactivePermissionPageRequest request) {
-        List<RolePermission> rolePermissions = this.rolePermissionService.findByRoleId(request.getRoleId());
+        Page<Permission> page = this.permissionMapper.selectInactivePage(request.getRoleId(), new Page<>(request.getCurrent(), request.getSize()));
 
-        List<Long> excludedIds = rolePermissions.stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
-
-        Page<Permission> page = new Page<>(request.getCurrent(), request.getSize());
-
-        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<Permission>()
-                .notIn(!excludedIds.isEmpty(), Permission::getId, excludedIds);
-
-        this.page(page, queryWrapper);
-
-        Page<PermissionResponse> responsePage = new Page<>();
-
-        BeanUtils.copyProperties(page, responsePage, "records");
-
-        responsePage.setRecords(page.getRecords().stream().map(PermissionResponse::of).collect(Collectors.toList()));
-
-        return responsePage;
+        return PageUtil.convert(page, PermissionResponse::of);
     }
 
     @Override

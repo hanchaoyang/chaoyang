@@ -1,11 +1,8 @@
 package com.chaoyang.example.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chaoyang.example.entity.dto.request.CreateRolePermissionRequest;
-import com.chaoyang.example.entity.dto.request.FindRolePermissionPageRequest;
 import com.chaoyang.example.entity.dto.request.RemoveRolePermissionRequest;
-import com.chaoyang.example.entity.dto.response.RolePermissionResponse;
 import com.chaoyang.example.entity.po.RolePermission;
 
 import java.util.List;
@@ -37,11 +34,6 @@ public interface RolePermissionService extends IService<RolePermission> {
      * 根据角色ID集合查询角色权限关联
      */
     List<RolePermission> findByRoleIds(List<Long> roleIds);
-
-    /**
-     * 根据角色ID分页查询角色权限关联
-     */
-    Page<RolePermissionResponse> findPage(FindRolePermissionPageRequest request);
 
     /**
      * 添加角色权限关联

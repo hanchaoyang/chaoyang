@@ -14,6 +14,7 @@ import com.chaoyang.example.service.RolePermissionService;
 import com.chaoyang.example.service.RoleService;
 import com.chaoyang.example.service.UserRoleService;
 import com.chaoyang.example.util.LoginUtil;
+import com.chaoyang.example.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     private final UserRoleService userRoleService;
 
     private final RolePermissionService rolePermissionService;
+
+    private final RoleMapper roleMapper;
 
     @Override
     public boolean existsByNameOrCode(String name, String code, Long excludeId) {
@@ -88,7 +91,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return RoleResponse.of(role);
     }
 
-    @SuppressWarnings("Duplicates")
     @Override
     public Page<RoleResponse> findPage(FindRolePageRequest request) {
         Page<Role> page = new Page<>(request.getCurrent(), request.getSize());
@@ -108,27 +110,18 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return responsePage;
     }
 
-    @SuppressWarnings("Duplicates")
+    @Override
+    public Page<RoleResponse> findActivePage(FindActiveRolePageRequest request) {
+        Page<Role> page = this.roleMapper.selectActivePage(request.getUserId(), new Page<>(request.getCurrent(), request.getSize()));
+
+        return PageUtil.convert(page, RoleResponse::of);
+    }
+
     @Override
     public Page<RoleResponse> findInactivePage(FindInactiveRolePageRequest request) {
-        List<UserRole> userRoles = this.userRoleService.findByUserId(request.getUserId());
+        Page<Role> page = this.roleMapper.selectInactivePage(request.getUserId(), new Page<>(request.getCurrent(), request.getSize()));
 
-        List<Long> excludedIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList());
-
-        Page<Role> page = new Page<>(request.getCurrent(), request.getSize());
-
-        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<Role>()
-                .notIn(!excludedIds.isEmpty(), Role::getId, excludedIds);
-
-        this.page(page, queryWrapper);
-
-        Page<RoleResponse> responsePage = new Page<>();
-
-        BeanUtils.copyProperties(page, responsePage, "records");
-
-        responsePage.setRecords(page.getRecords().stream().map(RoleResponse::of).collect(Collectors.toList()));
-
-        return responsePage;
+        return PageUtil.convert(page, RoleResponse::of);
     }
 
     @Override
@@ -147,6 +140,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         if (!this.save(role)) {
             throw new BusinessException(BusinessException.Message.CREATE_ROLE_FAIL);
         }
+    }
+
+    @Override
+    public void createRolePermission(CreateRolePermissionRequest request) {
+
     }
 
     @Override

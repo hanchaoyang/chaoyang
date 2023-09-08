@@ -48,6 +48,11 @@ public interface RoleService extends IService<Role> {
     Page<RoleResponse> findPage(FindRolePageRequest request);
 
     /**
+     * 根据用户ID分页查询已关联的角色
+     */
+    Page<RoleResponse> findActivePage(FindActiveRolePageRequest request);
+
+    /**
      * 根据用户ID分页查询未关联的角色
      */
     Page<RoleResponse> findInactivePage(FindInactiveRolePageRequest request);

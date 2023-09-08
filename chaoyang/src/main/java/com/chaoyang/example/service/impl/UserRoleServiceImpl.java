@@ -1,14 +1,10 @@
 package com.chaoyang.example.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chaoyang.example.constant.BasicConstant;
 import com.chaoyang.example.entity.dto.request.CreateUserRoleRequest;
-import com.chaoyang.example.entity.dto.request.FindUserRolePageRequest;
 import com.chaoyang.example.entity.dto.request.RemoveUserRoleRequest;
-import com.chaoyang.example.entity.dto.response.UserRoleResponse;
-import com.chaoyang.example.entity.po.Role;
 import com.chaoyang.example.entity.po.UserRole;
 import com.chaoyang.example.exception.BusinessException;
 import com.chaoyang.example.mapper.UserRoleMapper;
@@ -16,15 +12,12 @@ import com.chaoyang.example.service.RoleService;
 import com.chaoyang.example.service.UserRoleService;
 import com.chaoyang.example.service.UserService;
 import com.chaoyang.example.util.LoginUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * 用户角色关联服务层实现类
@@ -69,27 +62,6 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
                 .eq(UserRole::getRoleId, roleId);
 
         return this.getOne(queryWrapper);
-    }
-
-    @Override
-    public Page<UserRoleResponse> findPage(FindUserRolePageRequest request) {
-        Page<UserRole> page = new Page<>(request.getCurrent(), request.getSize());
-
-        LambdaQueryWrapper<UserRole> queryWrapper = new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, request.getUserId());
-
-        this.page(page, queryWrapper);
-
-        Page<UserRoleResponse> responsePage = new Page<>();
-
-        BeanUtils.copyProperties(page, responsePage, "records");
-
-        List<Long> roleIds = page.getRecords().stream().map(UserRole::getRoleId).collect(Collectors.toList());
-
-        Map<Long, Role> roleMap = this.roleService.findMapByIds(roleIds);
-
-        responsePage.setRecords(page.getRecords().stream().map(userRole -> UserRoleResponse.of(userRole, null, roleMap)).collect(Collectors.toList()));
-
-        return responsePage;
     }
 
     @Override

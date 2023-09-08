@@ -1,11 +1,8 @@
 package com.chaoyang.example.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chaoyang.example.entity.dto.request.CreateUserRoleRequest;
-import com.chaoyang.example.entity.dto.request.FindUserRolePageRequest;
 import com.chaoyang.example.entity.dto.request.RemoveUserRoleRequest;
-import com.chaoyang.example.entity.dto.response.UserRoleResponse;
 import com.chaoyang.example.entity.po.UserRole;
 
 import java.util.List;
@@ -32,11 +29,6 @@ public interface UserRoleService extends IService<UserRole> {
      * 根据用户ID查询用户角色关联
      */
     List<UserRole> findByUserId(Long userId);
-
-    /**
-     * 根据用户ID分页查询用户角色关联
-     */
-    Page<UserRoleResponse> findPage(FindUserRolePageRequest request);
 
     /**
      * 添加用户角色关联
