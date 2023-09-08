@@ -6,19 +6,19 @@ import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.NotNull;
 
 /**
- * 分页查询用户未关联的角色请求类
+ * 分页查询角色已关联的权限请求类
  *
  * @author 韩朝阳
- * @since 2023/4/4
+ * @since 2023/8/24
  */
 @Data
-public class FindInactiveRolePageRequest {
+public class FindAssociatedPermissionPageRequest {
 
     /**
-     * 用户ID
+     * 角色ID
      */
-    @NotNull(message = "用户ID不能为空")
-    private Long userId;
+    @NotNull(message = "角色ID不能为空")
+    private Long roleId;
 
     /**
      * 页码

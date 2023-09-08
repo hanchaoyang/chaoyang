@@ -20,12 +20,12 @@ public interface RoleMapper extends BaseMapper<Role> {
      * 根据用户ID分页查询已关联的角色
      */
     @Select("SELECT role.* FROM role WHERE id IN (SELECT role_id FROM user_role WHERE user_id = #{userId})")
-    Page<Role> selectActivePage(@Param("userId") Long userId, @Param("page") Page<Role> page);
+    Page<Role> selectAssociatedPage(@Param("userId") Long userId, @Param("page") Page<Role> page);
 
     /**
      * 根据用户ID分页查询未关联的角色
      */
     @Select("SELECT role.* FROM role WHERE id NOT IN (SELECT role_id FROM user_role WHERE user_id = #{userId})")
-    Page<Role> selectInactivePage(@Param("userId") Long userId, @Param("page") Page<Role> page);
+    Page<Role> selectUnassociatedPage(@Param("userId") Long userId, @Param("page") Page<Role> page);
 
 }

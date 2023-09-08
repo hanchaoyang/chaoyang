@@ -39,18 +39,18 @@ public class PermissionController {
         return Result.success(page);
     }
 
-    @GetMapping("/permission/active/page")
+    @GetMapping("/permission/associated/page")
     @RequiredPermission(value = {"permission:find", "role:find"}, and = true)
-    public Result<Page<PermissionResponse>> findActivePage(@Valid FindActivePermissionPageRequest request) {
-        Page<PermissionResponse> page = this.permissionService.findActivePage(request);
+    public Result<Page<PermissionResponse>> findAssociatedPage(@Valid FindAssociatedPermissionPageRequest request) {
+        Page<PermissionResponse> page = this.permissionService.findAssociatedPage(request);
 
         return Result.success(page);
     }
 
-    @GetMapping("/permission/inactive/page")
+    @GetMapping("/permission/unassociated/page")
     @RequiredPermission(value = {"permission:find", "role:find"}, and = true)
-    public Result<Page<PermissionResponse>> findInactivePage(@Valid FindInactivePermissionPageRequest request) {
-        Page<PermissionResponse> page = this.permissionService.findInactivePage(request);
+    public Result<Page<PermissionResponse>> findUnassociatedPage(@Valid FindUnassociatedPermissionPageRequest request) {
+        Page<PermissionResponse> page = this.permissionService.findUnassociatedPage(request);
 
         return Result.success(page);
     }

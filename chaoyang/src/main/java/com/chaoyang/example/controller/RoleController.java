@@ -40,18 +40,18 @@ public class RoleController {
         return Result.success(page);
     }
 
-    @GetMapping("/role/active/page")
+    @GetMapping("/role/associated/page")
     @RequiredPermission(value = {"role:find", "user:find"}, and = true)
-    public Result<Page<RoleResponse>> findActivePage(@Valid FindActiveRolePageRequest request) {
-        Page<RoleResponse> page = this.roleService.findActivePage(request);
+    public Result<Page<RoleResponse>> findAssociatedPage(@Valid FindAssociatedRolePageRequest request) {
+        Page<RoleResponse> page = this.roleService.findAssociatedPage(request);
 
         return Result.success(page);
     }
 
-    @GetMapping("/role/inactive/page")
+    @GetMapping("/role/unassociated/page")
     @RequiredPermission(value = {"role:find", "user:find"}, and = true)
-    public Result<Page<RoleResponse>> findInactivePage(@Valid FindInactiveRolePageRequest request) {
-        Page<RoleResponse> page = this.roleService.findInactivePage(request);
+    public Result<Page<RoleResponse>> findUnassociatedPage(@Valid FindUnassociatedRolePageRequest request) {
+        Page<RoleResponse> page = this.roleService.findUnassociatedPage(request);
 
         return Result.success(page);
     }

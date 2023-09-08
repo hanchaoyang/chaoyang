@@ -98,25 +98,19 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
         this.page(page, queryWrapper);
 
-        Page<PermissionResponse> responsePage = new Page<>();
-
-        BeanUtils.copyProperties(page, responsePage, "records");
-
-        responsePage.setRecords(page.getRecords().stream().map(PermissionResponse::of).collect(Collectors.toList()));
-
-        return responsePage;
+        return PageUtil.convert(page, PermissionResponse::of);
     }
 
     @Override
-    public Page<PermissionResponse> findActivePage(FindActivePermissionPageRequest request) {
-        Page<Permission> page = this.permissionMapper.selectActivePage(request.getRoleId(), new Page<>(request.getCurrent(), request.getSize()));
+    public Page<PermissionResponse> findAssociatedPage(FindAssociatedPermissionPageRequest request) {
+        Page<Permission> page = this.permissionMapper.selectAssociatedPage(request.getRoleId(), new Page<>(request.getCurrent(), request.getSize()));
 
         return PageUtil.convert(page, PermissionResponse::of);
     }
 
     @Override
-    public Page<PermissionResponse> findInactivePage(FindInactivePermissionPageRequest request) {
-        Page<Permission> page = this.permissionMapper.selectInactivePage(request.getRoleId(), new Page<>(request.getCurrent(), request.getSize()));
+    public Page<PermissionResponse> findUnassociatedPage(FindUnassociatedPermissionPageRequest request) {
+        Page<Permission> page = this.permissionMapper.selectUnassociatedPage(request.getRoleId(), new Page<>(request.getCurrent(), request.getSize()));
 
         return PageUtil.convert(page, PermissionResponse::of);
     }

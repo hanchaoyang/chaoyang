@@ -111,15 +111,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    public Page<RoleResponse> findActivePage(FindActiveRolePageRequest request) {
-        Page<Role> page = this.roleMapper.selectActivePage(request.getUserId(), new Page<>(request.getCurrent(), request.getSize()));
+    public Page<RoleResponse> findAssociatedPage(FindAssociatedRolePageRequest request) {
+        Page<Role> page = this.roleMapper.selectAssociatedPage(request.getUserId(), new Page<>(request.getCurrent(), request.getSize()));
 
         return PageUtil.convert(page, RoleResponse::of);
     }
 
     @Override
-    public Page<RoleResponse> findInactivePage(FindInactiveRolePageRequest request) {
-        Page<Role> page = this.roleMapper.selectInactivePage(request.getUserId(), new Page<>(request.getCurrent(), request.getSize()));
+    public Page<RoleResponse> findUnassociatedPage(FindUnassociatedRolePageRequest request) {
+        Page<Role> page = this.roleMapper.selectUnassociatedPage(request.getUserId(), new Page<>(request.getCurrent(), request.getSize()));
 
         return PageUtil.convert(page, RoleResponse::of);
     }

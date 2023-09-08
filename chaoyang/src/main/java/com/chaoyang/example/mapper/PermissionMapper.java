@@ -20,12 +20,12 @@ public interface PermissionMapper extends BaseMapper<Permission> {
      * 根据角色ID分页查询已关联的权限
      */
     @Select("SELECT permission.* FROM permission WHERE id IN (SELECT permission_id FROM role_permission WHERE role_id = #{roleId})")
-    Page<Permission> selectActivePage(@Param("roleId") Long roleId, @Param("page") Page<Permission> page);
+    Page<Permission> selectAssociatedPage(@Param("roleId") Long roleId, @Param("page") Page<Permission> page);
 
     /**
      * 根据角色ID分页查询未关联的权限
      */
     @Select("SELECT permission.* FROM permission WHERE id NOT IN (SELECT permission_id FROM role_permission WHERE role_id = #{roleId})")
-    Page<Permission> selectInactivePage(@Param("roleId") Long roleId, @Param("page") Page<Permission> page);
+    Page<Permission> selectUnassociatedPage(@Param("roleId") Long roleId, @Param("page") Page<Permission> page);
 
 }
